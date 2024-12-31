@@ -56,4 +56,3 @@ passport.serializeUser((user, done) => {
       done(null, results[0]);
     });
   });
-

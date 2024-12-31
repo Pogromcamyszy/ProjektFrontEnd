@@ -10,6 +10,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+// Middleware to parse URL-encoded form data
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(session({
   secret:"nienawidzePomidorow123",
@@ -51,7 +53,7 @@ connection.query('SELECT 1', (err, results) => {
   });
 
 //authorize users
-  app.post('/api/auth', passport.authenticate('local'), (req, res) => {
+  app.post('/api/user/auth', passport.authenticate('local'), (req, res) => {
     // If authentication is successful, send a 200 response
     res.status(200).send({
       message: 'Authentication successful',
@@ -59,12 +61,20 @@ connection.query('SELECT 1', (err, results) => {
     });
   });
 
+
+
   app.get('/api/user', (req,res) =>{
+    if(!req.user){
+       return res.sendStatus(401);
+    }
     console.log(req.session);
     console.log(req.user);
     res.sendStatus(200);
   })
+
+  app.post('/api/user', (req,res) => {
+    console.log(req.body);
+    return res.redirect("http://localhost:5173");
+  })
   
   
-
-
