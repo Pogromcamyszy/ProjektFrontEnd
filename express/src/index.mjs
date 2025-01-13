@@ -12,15 +12,22 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 // Middleware to parse URL-encoded form data
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
-app.use(session({
-  secret:"nienawidzePomidorow123",
-  saveUninitialized:false,
-  resave: false,
-  cookie: {
-    maxAge: 60000 * 60,
-  },
+app.use(cors({
+  origin: 'http://localhost:5173',  // Your frontend URL
+  credentials: true,  // Allow cookies to be sent/received
 }));
+app.use(
+  session({
+    secret: 'your-secret-key', // Used to sign the session ID cookie
+    resave: false,  // Don't resave the session if it wasn't modified
+    saveUninitialized: false,  // Don't save an uninitialized session
+    cookie: {
+      httpOnly: true, // Prevent client-side access to the cookie (security)
+      secure: false,  // Set to true if using HTTPS (for secure cookies)
+      maxAge: 3600000,  // Set cookie expiration (optional)
+    }
+  })
+);
 
 //Adding passport to app
 app.use(passport.initialize());
@@ -57,7 +64,8 @@ connection.query('SELECT 1', (err, results) => {
     // If authentication is successful, send a 200 response
     res.status(200).send({
       message: 'Authentication successful',
-      user: req.user,  // This will contain user info if authenticated
+      user:req.user,
+      cookies:req.cookies 
     });
   });
 
@@ -69,7 +77,7 @@ connection.query('SELECT 1', (err, results) => {
     }
     console.log(req.session);
     console.log(req.user);
-    res.sendStatus(200);
+    res.status(200).send({"message":"oki"});
   })
 
   app.post('/api/user', (req,res) => {

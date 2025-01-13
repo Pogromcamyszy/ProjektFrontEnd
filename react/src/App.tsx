@@ -1,10 +1,10 @@
-import Registry from "./User/Registry.jsx"
+import Login from "./Login/Login.tsx"
 
 function App() {
 
   return (
     <>
-       <Registry/>
+       <Login/>
     </>
   )
 }
