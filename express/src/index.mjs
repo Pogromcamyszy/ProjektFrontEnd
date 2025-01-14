@@ -19,12 +19,12 @@ app.use(cors({
 app.use(
   session({
     secret: 'your-secret-key', // Used to sign the session ID cookie
-    resave: false,  // Don't resave the session if it wasn't modified
+    resave: true,  // Don't resave the session if it wasn't modified
     saveUninitialized: false,  // Don't save an uninitialized session
     cookie: {
       httpOnly: true, // Prevent client-side access to the cookie (security)
       secure: false,  // Set to true if using HTTPS (for secure cookies)
-      maxAge: 3600000,  // Set cookie expiration (optional)
+      maxAge: 3600000,
     }
   })
 );
@@ -60,12 +60,10 @@ connection.query('SELECT 1', (err, results) => {
   });
 
 //authorize users
-  app.post('/api/user/auth', passport.authenticate('local'), (req, res) => {
+  app.post('/api/login', passport.authenticate('local'), (req, res) => {
     // If authentication is successful, send a 200 response
     res.status(200).send({
       message: 'Authentication successful',
-      user:req.user,
-      cookies:req.cookies 
     });
   });
 

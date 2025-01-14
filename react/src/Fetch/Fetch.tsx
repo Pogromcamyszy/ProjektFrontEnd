@@ -1,8 +1,8 @@
 
 
-const sendData = async (sendData: JSON,url: string): Promise<object> => {
+const sendData = async (sendData: object,url: string) => {
     try {
-      const res = await fetch(url, {
+      const res = await fetch("http://localhost:3000"+url,{
         method: "POST",
         headers: {
           "Content-Type": "application/json", // Specify JSON format
@@ -10,29 +10,39 @@ const sendData = async (sendData: JSON,url: string): Promise<object> => {
         body: JSON.stringify(sendData), // Convert data to JSON string
         credentials: "include", // Include cookies (session)
       });
+      if(res.ok){
       let data = await res.json(); 
       console.log(data); 
-      return data;
+      }
+      else {
+        console.error(`Error fetching data. Status: ${res.status}`);
+        return { message: `Error: ${res.statusText}` };
+      }
+      return res.status;
     } catch (error) {
       console.log("Error:", error);
-      return {"message":"Critical error"};
     }
   };
 
-  const getData = async (url:string) => {
+const getDataObject = async (url: string): Promise<object> => {
     try {
-      const response = await fetch(url, {
-        credentials: "include", 
+      const res = await fetch("http://localhost:3000"+url, {
+        credentials: "include", // Include cookies or authentication tokens
       });
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
+  
+      if (res.ok) {
+        // Try to parse JSON res
+        const data = await res.json(); 
+        console.log("Fetched data:", data);
         return data;
       } else {
-        console.log("Error fetching data");
+        console.error(`Error fetching data. Status: ${res.status}`);
+        return { message: `Error: ${res.statusText}` };
       }
     } catch (error) {
-      console.error("Error:", error);
-      return {"message":"Critical error"};
+      console.error("Error during fetch:", error);
+      return { message: "Critical error", error: error instanceof Error ? error.message : "Unknown error" };
     }
   };
+
+  export {sendData,getDataObject}
