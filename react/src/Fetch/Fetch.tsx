@@ -1,6 +1,6 @@
 
 
-const sendData = async (sendData: object,url: string) => {
+const sendDataObject = async (sendData: object,url: string) => {
     try {
       const res = await fetch("http://localhost:3000"+url,{
         method: "POST",
@@ -45,4 +45,4 @@ const getDataObject = async (url: string): Promise<object> => {
     }
   };
 
-  export {sendData,getDataObject}
+  export {sendDataObject,getDataObject}

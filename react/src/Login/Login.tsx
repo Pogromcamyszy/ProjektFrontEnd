@@ -1,6 +1,6 @@
 import { useState } from "react";
 import User from "./ILogin.tsx";
-import { sendData , getData, getDataObject } from "../Fetch/Fetch.tsx";
+import {sendDataObject} from "../Fetch/Fetch.tsx";
 
 export default function Login() {
   const [user, setUser] = useState<User>({ user_nickname: "", user_password: "" });
@@ -26,7 +26,7 @@ export default function Login() {
         onChange={handleUserPasswordChange}
       />
       <br />
-      <button onClick={e => {sendData(user,"/api/login")}}>Send</button>
+      <button onClick={e => {sendDataObject(user,"/api/login")}}>Send</button>
       <br />
       {user.user_nickname} {user.user_password}
     </>
