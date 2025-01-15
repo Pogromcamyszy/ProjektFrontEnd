@@ -1,6 +1,6 @@
 
 interface IRegistryUser {
-    user_name: String,
+    user_name: string,
     user_lastName: string,
     user_password: string,
     user_nickname: string,

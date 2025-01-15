@@ -59,7 +59,7 @@ connection.query('SELECT 1', (err, results) => {
     })
   });
 
-//authorize users
+//authorize users and send cookies back
   app.post('/api/login', passport.authenticate('local'), (req, res) => {
     // If authentication is successful, send a 200 response
     res.status(200).send({
@@ -67,6 +67,31 @@ connection.query('SELECT 1', (err, results) => {
     });
   });
 
+//check if user is taken 
+app.get('/api/taken/:nick',(req,res) => {
+   if(req.user){
+    res.status(401).send({
+      message: 'Cannot registry when logged',
+    });
+   }
+   
+   const nick = req.params.nick;
+   if(!nick || nick.trim() === ""){
+    res.status(400).send({message:"Bad request"});
+   }
+
+   const query = "SELECT user_id FROM users WHERE user_nickname LIKE ?";
+   connection.query(query,[nick],(err,resault) =>{
+    try{
+      if(err) res.status(500).send({message:"Internal server error"});
+      if(resault.length == 0) res.status(201).send({message:"There is no user",agree:true});   
+      else res.status(200).send({message:"user found", agree:false});
+    }
+    catch(error){
+      console.log(error);
+    }
+   })
+});
 
 
   app.get('/api/user', (req,res) =>{
@@ -76,11 +101,11 @@ connection.query('SELECT 1', (err, results) => {
     console.log(req.session);
     console.log(req.user);
     res.status(200).send({"message":"oki"});
-  })
+  });
 
   app.post('/api/user', (req,res) => {
     console.log(req.body);
     return res.redirect("http://localhost:5173");
-  })
+  });
   
   

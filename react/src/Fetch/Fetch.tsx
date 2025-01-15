@@ -16,11 +16,11 @@ const sendDataObject = async (sendData: object,url: string) => {
       }
       else {
         console.error(`Error fetching data. Status: ${res.status}`);
-        return { message: `Error: ${res.statusText}` };
       }
       return res.status;
     } catch (error) {
       console.log("Error:", error);
+      return resizeBy.
     }
   };
 
