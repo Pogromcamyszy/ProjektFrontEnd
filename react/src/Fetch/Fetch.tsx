@@ -20,7 +20,6 @@ const sendDataObject = async (sendData: object,url: string) => {
       return res.status;
     } catch (error) {
       console.log("Error:", error);
-      return resizeBy.
     }
   };
 
@@ -45,4 +44,34 @@ const getDataObject = async (url: string): Promise<object> => {
     }
   };
 
-  export {sendDataObject,getDataObject}
+
+  const checkIfNickAvaible = async (nick: string) => {  
+    const statment = {
+      avaible: false,
+      error: false,
+    };
+
+    try {
+      console.log("Checking if nickname is available for: ", nick);
+
+      // Fetch data from API
+      const response = await fetch('http://localhost:3000/api/taken/' + nick);
+      console.log('Response status: ', response.status); // Log the status code
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('API Response:', result); // Log the response data
+        statment.avaible = result.agree;
+      } else {
+        console.log('Server error, try again later');
+        statment.error = true;
+      }
+    } catch (err) {
+      console.log('Network error occurred');
+      statment.error = true;
+    } finally {
+      return statment;
+    }
+  };
+
+  export {sendDataObject,getDataObject,checkIfNickAvaible}

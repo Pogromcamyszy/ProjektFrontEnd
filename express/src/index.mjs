@@ -93,6 +93,30 @@ app.get('/api/taken/:nick',(req,res) => {
    })
 });
 
+app.post('/api/registry', (req, res) => { // Fix argument order: req first, then res
+  console.log("i live");
+  const user = req.body; // Correctly access the request body
+  console.log(user);
+  const query = "INSERT INTO users (user_nickname, user_password, user_description, user_name, user_lastName) VALUES (?,?,?,?,?)";
+  connection.query(
+    query,
+    [user.user_nickname, user.user_password, user.user_description, user.user_name, user.user_lastName],
+    (err, result) => {
+      try {
+        if (err) {
+          console.error(err); // Log the error for debugging purposes
+          return res.status(500).send({ message: "Internal server error" }); // Return error response
+        }
+
+        console.log(`user ${user.user_nickname}`);
+        res.status(201).send({ message: "User created successfully" });
+      } catch (error) {
+        console.error(error); // Log unexpected errors
+        res.status(500).send({ message: "Unexpected error occurred" });
+      }
+    }
+  );
+});
 
   app.get('/api/user', (req,res) =>{
     if(!req.user){

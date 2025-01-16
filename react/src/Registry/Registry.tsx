@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { IRegistryUser, IRegistryFormMsg } from "./IRegistry.tsx";
-import { validateNotEmpty, validateMaxLength, validateMinLength, validateAtLeastOneUpper , validateNoSpaces , validateOneSpecialCharacter} from "../Validate/ValidateFunctions.tsx";
-import { sendDataObject } from "../Fetch/Fetch.tsx";
+import {validateUserLastName,validateUserName,validateNickName,validateDescription,validatePassword} from "../Validate/ValidateFunctions.tsx";
+import { sendDataObject,checkIfNickAvaible } from "../Fetch/Fetch.tsx";
 
 function UserForm() {
 
@@ -21,157 +21,85 @@ function UserForm() {
     user_description_msg: ""
   })
 
+  const [errorMsg,setErrorMsg] = useState<string>("");
+
 
   const handleChange = (e) => {
-    const { id, value} = e.target; // Correctly access id and value
-    setFormData({ ...formData, [id]: value }); // set inserted data into FormData
-    
+    const { id, value } = e.target; // Correctly access id and value
+  
+    // Update the formData state with the new input
+    setFormData({ ...formData, [id]: value });
+  
+    let validationResult;
+  
+    // Switch based on the field ID
     switch (id) {
       case "user_password":
-        validatePassword(value);
-        console.log(validatePassword(value));
+        validationResult = validatePassword(value); 
+          setFormDataMsg({ ...formDataMsg, user_password_msg: validationResult.msg });
         break;
-    
+  
       case "user_name":
-        validateUserName(value);
-        console.log(validateUserName(value));
+        validationResult = validateUserName(value); 
+          setFormDataMsg( {...formDataMsg, user_name_msg: validationResult.msg });
         break;
-    
+  
       case "user_lastName":
-        validateUserLastName(value);
-        console.log(validateUserLastName(value));
+        validationResult = validateUserLastName(value); // Assuming this validates the nickname
+          setFormDataMsg({ ...formDataMsg, user_lastName_msg: validationResult.msg });
         break;
-    
+  
       case "user_nickname":
-        validateNickName(value);
-        console.log(validateNickName(value));
+        validationResult = validateNickName(value); // Assuming this validates the nickname
+          setFormDataMsg((e) => ({ ...formDataMsg, user_nickname_msg: validationResult.msg }));
         break;
-      
+  
       case "user_description":
-        validateDescription(value);
-        console.log(validateDescription(value));
+        validationResult = validateDescription(value); // Assuming this validates the description
+          setFormDataMsg((e) => ({ ...formDataMsg, user_description_msg: validationResult.msg }));
         break;
-
+  
       default:
-        console.log(value.length);
+        console.log(`Unhandled field with ID: ${id}, Value Length: ${value.length}`);
         break;
     }
   };
 
   const handleSubmit = async (e) => {
+    setErrorMsg(" ");
     e.preventDefault(); 
   
     // Validate form data
     if (
-      validateNickName(formData.user_nickname) &&
-      validatePassword(formData.user_password) &&
-      validateDescription(formData.user_description) &&
-      validateUserName(formData.user_name) &&
-      validateUserLastName(formData.user_lastName)
+      validateNickName(formData.user_nickname).state &&
+      validatePassword(formData.user_password).state &&
+      validateDescription(formData.user_description).state &&
+      validateUserName(formData.user_name).state &&
+      validateUserLastName(formData.user_lastName).state
     ) {
       console.log("Form data: ", formData);
   
-      // Check if nickname is available
-      const checkIfNickAvaible = async (nick: string): Promise<object> => {  
-        const statment = {
-          avaible: false,
-          error: false,
-        };
-  
-        try {
-          console.log("Checking if nickname is available for: ", nick);
-  
-          // Fetch data from API
-          const response = await fetch('http://localhost:3000/api/taken/' + nick);
-          console.log('Response status: ', response.status); // Log the status code
-          
-          if (response.ok) {
-            const result = await response.json();
-            console.log('API Response:', result); // Log the response data
-            statment.avaible = result.agree;
-          } else {
-            console.log('Server error, try again later');
-            statment.error = true;
+      const answer = await checkIfNickAvaible(formData.user_nickname);
+      console.log('Availability check result:', answer);
+        if(!answer.error)
+        {  
+          if(answer.avaible){
+              const res = await sendDataObject(formData,"/api/registry");
+              console.log(res);
+              if(res == 201) setErrorMsg("User created sucesfuly");
+              else setErrorMsg("Error occured while sending data please try later ");
           }
-        } catch (err) {
-          console.log('Network error occurred');
-          statment.error = true;
-        } finally {
-          return statment;
+          else setFormDataMsg({...formDataMsg,user_nickname_msg:"Username already taken"});
         }
-      };
-  
-      // Await the availability check result
-      const awa = await checkIfNickAvaible(formData.user_nickname);
-      console.log('Availability check result:', awa);
-    
-    } else {
-      console.log("Form validation failed");
+    else {
+      setErrorMsg("Error occured while geting data please try again later");
     }
-  };
-  
-  const validatePassword = (pass:string) => {
-
-        if(!validateNotEmpty(pass)) setFormDataMsg({...formDataMsg,["user_password_msg"]:"Password cannot be empty "});
-        else if(!validateMinLength(pass,8)) setFormDataMsg({...formDataMsg,["user_password_msg"]:"Password should be at least 8 characters long"});
-        else if(!validateMaxLength(pass,32)) setFormDataMsg({...formDataMsg,["user_password_msg"]:"Password should be 32 characters long"});
-        else if(!validateNoSpaces(pass)) setFormDataMsg({...formDataMsg,["user_password_msg"]:"Password cannot contain blank spaces"});
-        else if(!validateAtLeastOneUpper(pass)) setFormDataMsg({...formDataMsg,["user_password_msg"]:"Password needs to contain at least one uppercase character"});
-        else if(!validateOneSpecialCharacter(pass)) setFormDataMsg({...formDataMsg,["user_password_msg"]:"Password needs to contain at least special character"});
-        else {
-        setFormDataMsg({...formDataMsg,["user_password_msg"]:""}) 
-        return true;
-        }
-        return false;
-  };
-
-  const validateUserName= (name:string) =>{
-     if(!validateNotEmpty(name)) setFormDataMsg({...formDataMsg,["user_name_msg"]:"Youre name cannot be empty"});
-     else if(!validateMinLength(name,3)) setFormDataMsg({...formDataMsg,["user_name_msg"]:"Youre name need to have at least 3 characters "});
-     else if(!validateMaxLength(name,32)) setFormDataMsg({...formDataMsg,["user_name_msg"]:"youre name shouldn't be longer than 32 characters"});
-     else{
-      setFormDataMsg({...formDataMsg,["user_name_msg"]:""});
-      return true;
-     } 
-     return false;
-  }
-
-  const validateUserLastName= (lastname:string) =>{
-    if(!validateNotEmpty(lastname)) setFormDataMsg({...formDataMsg,["user_lastName_msg"]:"Youre last name cannot be empty"});
-    else if(!validateMinLength(lastname,3)) setFormDataMsg({...formDataMsg,["user_lastName_msg"]:"Youre last name need to have at least 3 characters "});
-    else if(!validateMaxLength(lastname,32)) setFormDataMsg({...formDataMsg,["user_lastName_msg"]:"youre last name shouldn't be longer than 32 characters"});
-    else{
-      setFormDataMsg({...formDataMsg,["user_lastName_msg"]:""});
-      return true;
-    } 
-    return false;
- } 
-
- const validateNickName = (nickname:string) =>{
-   if(!validateNotEmpty(nickname)) setFormDataMsg({...formDataMsg,["user_nickname_msg"]:"Youre nickname cannot be empty"});
-   else if(!validateNoSpaces(nickname)) setFormDataMsg({...formDataMsg,["user_nickname_msg"]:"Youre nickname cannot contain blank spaces"});
-   else if(!validateMinLength(nickname,8)) setFormDataMsg({...formDataMsg,["user_nickname_msg"]:"Youre nickname should contains at least 8 characters"});
-   else if(!validateMaxLength(nickname,14)) setFormDataMsg({...formDataMsg,["user_nickname_msg"]:"Youre nickname should contains maximum of 14 characters"});
-   else{ 
-    setFormDataMsg({...formDataMsg,["user_nickname_msg"]:""});
-    return true;
-   }
-   return false;
- }
-
- const validateDescription =(description:string) => {
-   if(!validateMaxLength(description,300)){
-     setFormDataMsg({...formDataMsg,["user_description_msg"]:"Youre description cannot be bigger than 300 characters"});
-     return false;
-   } 
-   else{
-     setFormDataMsg({...formDataMsg,["user_description_msg"]:""});
-     return true;
-   }
- }
+  }  
+};
 
   return (
     <form onSubmit={handleSubmit} method="POST">
+       {errorMsg} <br/>
       <label htmlFor="user_name">First Name:</label><br/>
       <input
         type="text"
