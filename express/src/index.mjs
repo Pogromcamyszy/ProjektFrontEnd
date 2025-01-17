@@ -69,12 +69,6 @@ connection.query('SELECT 1', (err, results) => {
 
 //check if user is taken 
 app.get('/api/taken/:nick',(req,res) => {
-   if(req.user){
-    res.status(401).send({
-      message: 'Cannot registry when logged',
-    });
-   }
-   
    const nick = req.params.nick;
    if(!nick || nick.trim() === ""){
     res.status(400).send({message:"Bad request"});
@@ -94,6 +88,11 @@ app.get('/api/taken/:nick',(req,res) => {
 });
 
 app.post('/api/registry', (req, res) => { // Fix argument order: req first, then res
+  if(req.user){
+      return res.status(401).send({
+      message: 'Cannot registry when logged',
+    });
+   }
   console.log("i live");
   const user = req.body; // Correctly access the request body
   console.log(user);
@@ -109,16 +108,16 @@ app.post('/api/registry', (req, res) => { // Fix argument order: req first, then
         }
 
         console.log(`user ${user.user_nickname}`);
-        res.status(201).send({ message: "User created successfully" });
+        return res.status(200).send({ message: "User created successfully" });
       } catch (error) {
         console.error(error); // Log unexpected errors
-        res.status(500).send({ message: "Unexpected error occurred" });
+        return res.status(500).send({ message: "Unexpected error occurred" });
       }
     }
   );
 });
 
-  app.get('/api/user', (req,res) =>{
+  app.get('/api/auth', (req,res) =>{
     if(!req.user){
        return res.sendStatus(401);
     }
@@ -127,9 +126,5 @@ app.post('/api/registry', (req, res) => { // Fix argument order: req first, then
     res.status(200).send({"message":"oki"});
   });
 
-  app.post('/api/user', (req,res) => {
-    console.log(req.body);
-    return res.redirect("http://localhost:5173");
-  });
   
   

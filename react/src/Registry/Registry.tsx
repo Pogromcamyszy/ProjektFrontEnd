@@ -5,8 +5,6 @@ import { sendDataObject,checkIfNickAvaible } from "../Fetch/Fetch.tsx";
 
 function UserForm() { 
   
-  
-
   const [errorMsg,setErrorMsg] = useState<string>("");
 
   const [formData, setFormData] = useState<IRegistryUser>({
@@ -17,22 +15,6 @@ function UserForm() {
     user_description: ""
   });
 
-  const [isNickAvaible,setIsNickAvaible] = useState<boolean>(false);
-
-  useEffect(() => {
-     checkNick();
-  },[formData.user_nickname])
-
-  const checkNick = async() => {
-    if(validateNickName(formData.user_nickname).state){
-      const res = await checkIfNickAvaible(formData.user_nickname);
-      if(res.avaible && res.status){
-         setIsNickAvaible(true);
-      }
-      else setIsNickAvaible(false);
-      }
-  }
-
   const [formDataMsg, setFormDataMsg] = useState<IRegistryFormMsg>({
     user_name_msg: "",
     user_lastName_msg: "",
@@ -40,6 +22,33 @@ function UserForm() {
     user_nickname_msg: "",
     user_description_msg: ""
   })
+
+
+  const [isNickAvaible,setIsNickAvaible] = useState<boolean>(false);
+
+
+////Dynamical nickname status display
+  //display if nick is avaible or taken 
+  useEffect(() => {
+    console.log("wykonane")
+     checkNick();
+  },[formData.user_nickname])
+
+// Async function which fetch checkIfnickAvaible and set IsNickAvaible if nick was validated correcly 
+  const checkNick = async() => {
+    if(validateNickName(formData.user_nickname).state){
+      const res = await checkIfNickAvaible(formData.user_nickname);
+      if(res.avaible && res.status){
+         setIsNickAvaible(true);
+         setFormDataMsg({...formDataMsg,user_nickname_msg: "Nick is available"});
+      }
+      else if(!res.avaible && res.status){
+        setIsNickAvaible(false);
+        setFormDataMsg({...formDataMsg, user_nickname_msg: "Unavaible"});
+      }
+      }
+  }
+
 
 
 /// sets values and validate them
@@ -99,9 +108,13 @@ function UserForm() {
       isNickAvaible 
     ) {        
               const res = await sendDataObject(formData,"/api/registry");
+              console.log("post resault:"+res);
               if(res == 200){
                 setErrorMsg("User was sucefuly created");
-                setIsNickAvaible(false);
+                checkNick();
+              }
+              else if(res == 401){
+                setErrorMsg("Cannot create user while logged");
               }
               else{             
                 setErrorMsg("Problems with sending data plase try later");

@@ -48,7 +48,6 @@ const getDataObject = async (url: string): Promise<object> => {
   const checkIfNickAvaible = async (nick: string) => {  
     const statment = {
       avaible: false,
-      error: false,
       status: 404
     };
 
@@ -62,16 +61,24 @@ const getDataObject = async (url: string): Promise<object> => {
       if (response.ok) {
         const result = await response.json();
         statment.avaible = result.agree;
-      } else {
-        statment.error = true;
-      }
+      } 
       statment.status = response.status;
-    } catch (err) {
-      statment.error = true;
-    } finally {
+    }finally {
       console.log(statment);
       return statment;
     }
   };
 
-  export {sendDataObject,getDataObject,checkIfNickAvaible}
+//auth user if logged
+const getAuth = async() => {
+   try{
+    const res = await fetch("http://localhost:3000/api/auth",{
+      credentials: "include", // Include cookies or authentication tokens
+    });
+    return res.status;
+   }catch(error){
+    console.log("somethingwrong")
+   }
+}
+
+  export {sendDataObject,getDataObject,checkIfNickAvaible,getAuth}
