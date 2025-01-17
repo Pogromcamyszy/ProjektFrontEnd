@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IRegistryUser, IRegistryFormMsg } from "./IRegistry.tsx";
 import {validateUserLastName,validateUserName,validateNickName,validateDescription,validatePassword} from "../Validate/ValidateFunctions.tsx";
 import { sendDataObject,checkIfNickAvaible } from "../Fetch/Fetch.tsx";
 
-function UserForm() {
+function UserForm() { 
+  
+  
+
+  const [errorMsg,setErrorMsg] = useState<string>("");
 
   const [formData, setFormData] = useState<IRegistryUser>({
     user_name: "",
@@ -13,6 +17,22 @@ function UserForm() {
     user_description: ""
   });
 
+  const [isNickAvaible,setIsNickAvaible] = useState<boolean>(false);
+
+  useEffect(() => {
+     checkNick();
+  },[formData.user_nickname])
+
+  const checkNick = async() => {
+    if(validateNickName(formData.user_nickname).state){
+      const res = await checkIfNickAvaible(formData.user_nickname);
+      if(res.avaible && res.status){
+         setIsNickAvaible(true);
+      }
+      else setIsNickAvaible(false);
+      }
+  }
+
   const [formDataMsg, setFormDataMsg] = useState<IRegistryFormMsg>({
     user_name_msg: "",
     user_lastName_msg: "",
@@ -21,9 +41,8 @@ function UserForm() {
     user_description_msg: ""
   })
 
-  const [errorMsg,setErrorMsg] = useState<string>("");
 
-
+/// sets values and validate them
   const handleChange = (e) => {
     const { id, value } = e.target; // Correctly access id and value
   
@@ -65,6 +84,7 @@ function UserForm() {
     }
   };
 
+/// send post request / registry user
   const handleSubmit = async (e) => {
     setErrorMsg(" ");
     e.preventDefault(); 
@@ -75,26 +95,18 @@ function UserForm() {
       validatePassword(formData.user_password).state &&
       validateDescription(formData.user_description).state &&
       validateUserName(formData.user_name).state &&
-      validateUserLastName(formData.user_lastName).state
-    ) {
-      console.log("Form data: ", formData);
-  
-      const answer = await checkIfNickAvaible(formData.user_nickname);
-      console.log('Availability check result:', answer);
-        if(!answer.error)
-        {  
-          if(answer.avaible){
+      validateUserLastName(formData.user_lastName).state &&
+      isNickAvaible 
+    ) {        
               const res = await sendDataObject(formData,"/api/registry");
-              console.log(res);
-              if(res == 201) setErrorMsg("User created sucesfuly");
-              else setErrorMsg("Error occured while sending data please try later ");
-          }
-          else setFormDataMsg({...formDataMsg,user_nickname_msg:"Username already taken"});
-        }
-    else {
-      setErrorMsg("Error occured while geting data please try again later");
-    }
-  }  
+              if(res == 200){
+                setErrorMsg("User was sucefuly created");
+                setIsNickAvaible(false);
+              }
+              else{             
+                setErrorMsg("Problems with sending data plase try later");
+              }
+      }            
 };
 
   return (

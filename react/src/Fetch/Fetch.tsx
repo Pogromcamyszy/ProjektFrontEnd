@@ -49,6 +49,7 @@ const getDataObject = async (url: string): Promise<object> => {
     const statment = {
       avaible: false,
       error: false,
+      status: 404
     };
 
     try {
@@ -60,16 +61,15 @@ const getDataObject = async (url: string): Promise<object> => {
       
       if (response.ok) {
         const result = await response.json();
-        console.log('API Response:', result); // Log the response data
         statment.avaible = result.agree;
       } else {
-        console.log('Server error, try again later');
         statment.error = true;
       }
+      statment.status = response.status;
     } catch (err) {
-      console.log('Network error occurred');
       statment.error = true;
     } finally {
+      console.log(statment);
       return statment;
     }
   };
