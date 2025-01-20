@@ -23,9 +23,12 @@ const sendDataObject = async (sendData: object,url: string) => {
     }
   };
 
-const getDataObject = async (url: string): Promise<object> => {
+const getDataObject = async (url: string,param?:string): Promise<object> => {
     let status;
     try {
+      if(param){
+        url+="/"+param;
+      }
       const res = await fetch("http://localhost:3000"+url, {
         credentials: "include", // Include cookies or authentication tokens
       });
@@ -33,7 +36,7 @@ const getDataObject = async (url: string): Promise<object> => {
       status = await res.status;
       if (res.ok) {
         // Try to parse JSON res
-        console.log("Fetched data:", data.status);
+        console.log("Fetched data:", status);
         return {status:status,object:data};
       } else {
         console.error(`Error fetching data. Status: ${res.status}`);
@@ -55,7 +58,10 @@ const getDataObject = async (url: string): Promise<object> => {
       console.log("Checking if nickname is available for: ", nick);
 
       // Fetch data from API
-      const response = await fetch('http://localhost:3000/api/taken/' + nick);
+      const response = await fetch('http://localhost:3000/api/taken/'+nick,{
+        credentials: "include", // Include cookies or authentication tokens
+      });
+
       console.log('Response status: ', response.status); // Log the status code
       
       if (response.ok) {
@@ -81,4 +87,24 @@ const getAuth = async() => {
    }
 }
 
-  export {sendDataObject,getDataObject,checkIfNickAvaible,getAuth}
+const patchObject = async(data,url) =>{
+    try {
+      const response = await fetch("http://localhost:3000"+url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Include cookies if necessary
+        body: JSON.stringify(data),
+      });
+      const answer = await response.status;
+      
+      return answer;
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      return 404;
+    }
+  };
+
+
+  export {sendDataObject,getDataObject,checkIfNickAvaible,getAuth,patchObject}

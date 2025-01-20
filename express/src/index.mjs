@@ -62,9 +62,6 @@ connection.query('SELECT 1', (err, results) => {
 //authorize users and send cookies back
   app.post('/api/login', passport.authenticate('local'), (req, res) => {
     // If authentication is successful, send a 200 response
-    if(!req.user){
-      return res.status(401).send({message:"Login"});
-   }
     res.status(200).send({
       message: 'Authentication successful',
     });
@@ -73,16 +70,21 @@ connection.query('SELECT 1', (err, results) => {
 //check if user is taken 
 app.get('/api/taken/:nick',(req,res) => {
    const nick = req.params.nick;
-   if(!nick || nick.trim() === ""){
-    res.status(400).send({message:"Bad request"});
+   if(req.user){
+   const presentNick = req.user.user_nickname;
+   if(nick === presentNick){
+    return res.status(200).send({message:"Nick is owned by you",agree:true});
    }
-
+   if(!nick || nick.trim() === ""){
+    return res.status(400).send({message:"Bad request"});
+   }
+  }
    const query = "SELECT user_id FROM users WHERE user_nickname LIKE ?";
    connection.query(query,[nick],(err,resault) =>{
     try{
-      if(err) res.status(500).send({message:"Internal server error"});
-      if(resault.length == 0) res.status(200).send({message:"There is no user",agree:true});   
-      else res.status(200).send({message:"user found", agree:false});
+      if(err) return res.status(500).send({message:"Internal server error"});
+      if(resault.length == 0) return res.status(200).send({message:"There is no user",agree:true});   
+      else return res.status(200).send({message:"user found", agree:false});
     }
     catch(error){
       console.log(error);
@@ -124,20 +126,64 @@ app.post('/api/registry', (req, res) => { // Fix argument order: req first, then
     if(!req.user){
        return res.sendStatus(401);
     }
-    console.log(req.session);
-    console.log(req.user);
     res.status(200).send({"message":"oki"});
   });
 
-
+//// get Peofile
   app.get('/api/profile',(req,res) => {
-    /*if(!req.user){
-      return res.status(401).send("Not logged")
-    } */
+    if(!req.user){
+      return res.status(401).send({message:"Not logged"})
+    }
 
     const user = req.user;
-    console.log(user);
     return res.status(200).send(user);
+ });
+
+ app.get('/api/profile/:nick',(req,res) =>{
+  const nick = req.params.nick;
+  console.log(nick);
+  const query = "SELECT * FROM users WHERE user_nickname LIKE ?"
+  connection.query(query,[nick],(err,resault) =>{
+
+      if(err) return res.status(500).send({message:"Server error"});
+      
+      if(resault.length == 0) return res.status(404).send({message:"Not found"});
+
+      return res.status(200).json(resault[0]);
+ 
   })
+ });
+
+///update user profile
+  app.put('/api/profile',(req,res) =>{
+    if(!req.user){
+      return res.sendStatus(401);
+    }
+    const newData = req.body;
+    const id = req.user.user_id;
+    console.log(newData);
+    const query = `
+    UPDATE users
+    SET user_nickname = ?, user_description = ?, user_name = ?, user_lastName = ?
+    WHERE user_id = ?
+  `;
+
+  connection.query(
+    query,
+    [newData.user_nickname, newData.user_description, newData.user_name, newData.user_lastName, id],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating profile:", err);
+        return res.sendStatus(500);
+      }
+
+      if (result.affectedRows === 0) {
+        return res.sendStatus(404);
+      }
+
+      return res.sendStatus(200);
+    }
+  )
+})
   
   

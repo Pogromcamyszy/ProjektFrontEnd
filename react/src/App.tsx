@@ -2,6 +2,7 @@ import React, { createContext, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Link,useLocation } from "react-router-dom";
 import Login from "./Login/Login.tsx";
 import Registry from "./Registry/Registry.tsx";
+import MyProfile from "./Profile/MyProfile.tsx";
 import Profile from "./Profile/Profile.tsx";
 import navbar from "./styles/navbar.module.css";
 
@@ -33,8 +34,8 @@ function App() {
                   <div className={navbar.btn}>Placeholder</div>
                   <div className={navbar.btn}>Placeholder</div>
                   <div className={navbar.btn}>Placeholder</div>
-                  <div className={navbar.btn}><Link to="/profile">Profile</Link></div>
-                  <div className={navbar.btn}>Placeholder</div>
+                  <div className={navbar.btn}><Link to="/myprofile">My profile</Link></div>
+                  <div className={navbar.btn}><Link to="/profile"></Link></div>
                 </>
               )}
             </div>
@@ -46,7 +47,8 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/registry" element={<Registry />} />
-              <Route path="/profile" element={<Profile/>}/>
+              <Route path="/myprofile" element={<MyProfile/>}/>
+              <Route path="/profile/:nick" element={<Profile/>}/>
             </Routes>
           </div>
         </div>
