@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import User from "./ILogin.tsx";
 import {sendDataObject} from "../Fetch/Fetch.tsx";
 
 export default function Login() {
   const [user, setUser] = useState<User>({ user_nickname: "", user_password: "" });
+  
 
   const handleUserNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUser({ ...user, user_nickname: e.target.value });

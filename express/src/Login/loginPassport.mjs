@@ -10,7 +10,6 @@ export default passport.use(
       },
       async (username, password, done) => {
         try {
-          console.log(username);
           connection.query(
             'SELECT * FROM users WHERE user_nickname = ?',
             [username], 
@@ -20,7 +19,6 @@ export default passport.use(
               }
   
               if (results.length === 0) {
-                // No user found
                 return done(null, false, { message: 'Incorrect username' });
               }
   
@@ -43,13 +41,11 @@ export default passport.use(
   
   // Serialize user into session (store the user ID)
 passport.serializeUser((user, done) => {
-    console.log(user);
     done(null, user.user_id);
   });
   
   // Deserialize user from session (retrieve the user by ID)
   passport.deserializeUser((id, done) => {
-    console.log(id);
     connection.query('SELECT * FROM users WHERE user_id = ?', [id], (err, results) => {
       if (err) return done(err);
       if (results.length === 0) return done(null, false);

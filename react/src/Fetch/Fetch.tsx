@@ -24,26 +24,26 @@ const sendDataObject = async (sendData: object,url: string) => {
   };
 
 const getDataObject = async (url: string): Promise<object> => {
+    let status;
     try {
       const res = await fetch("http://localhost:3000"+url, {
         credentials: "include", // Include cookies or authentication tokens
       });
-  
+      const data = await res.json(); 
+      status = await res.status;
       if (res.ok) {
         // Try to parse JSON res
-        const data = await res.json(); 
-        console.log("Fetched data:", data);
-        return data;
+        console.log("Fetched data:", data.status);
+        return {status:status,object:data};
       } else {
         console.error(`Error fetching data. Status: ${res.status}`);
-        return { message: `Error: ${res.statusText}` };
+        return {status:status, message: `Error: ${res.statusText}` };
       }
     } catch (error) {
       console.error("Error during fetch:", error);
-      return { message: "Critical error", error: error instanceof Error ? error.message : "Unknown error" };
+      return { status:status,message: "Critical error", error: error instanceof Error ? error.message : "Unknown error" };
     }
   };
-
 
   const checkIfNickAvaible = async (nick: string) => {  
     const statment = {

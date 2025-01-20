@@ -62,6 +62,9 @@ connection.query('SELECT 1', (err, results) => {
 //authorize users and send cookies back
   app.post('/api/login', passport.authenticate('local'), (req, res) => {
     // If authentication is successful, send a 200 response
+    if(!req.user){
+      return res.status(401).send({message:"Login"});
+   }
     res.status(200).send({
       message: 'Authentication successful',
     });
@@ -126,5 +129,15 @@ app.post('/api/registry', (req, res) => { // Fix argument order: req first, then
     res.status(200).send({"message":"oki"});
   });
 
+
+  app.get('/api/profile',(req,res) => {
+    /*if(!req.user){
+      return res.status(401).send("Not logged")
+    } */
+
+    const user = req.user;
+    console.log(user);
+    return res.status(200).send(user);
+  })
   
   
