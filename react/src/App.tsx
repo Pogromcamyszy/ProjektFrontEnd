@@ -5,7 +5,7 @@ import Registry from "./Registry/Registry.tsx";
 import MyProfile from "./Profile/MyProfile.tsx";
 import Profile from "./Profile/Profile.tsx";
 import navbar from "./styles/navbar.module.css";
-
+import PostCreate from "./Posts/PostCreate.tsx";
 // Create the context
 export const AuthContext = createContext([false, () => {}]);
 
@@ -33,7 +33,7 @@ function App() {
                 <>
                   <div className={navbar.btn}>Placeholder</div>
                   <div className={navbar.btn}>Placeholder</div>
-                  <div className={navbar.btn}>Placeholder</div>
+                  <div className={navbar.btn}><Link to="/createpost">Create Post</Link></div>
                   <div className={navbar.btn}><Link to="/myprofile">My profile</Link></div>
                   <div className={navbar.btn}><Link to="/profile"></Link></div>
                 </>
@@ -49,6 +49,7 @@ function App() {
               <Route path="/registry" element={<Registry />} />
               <Route path="/myprofile" element={<MyProfile/>}/>
               <Route path="/profile/:nick" element={<Profile/>}/>
+              <Route path="/createpost" element={<PostCreate/>}/>
             </Routes>
           </div>
         </div>

@@ -56,4 +56,18 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+
+CREATE TABLE `imgbook`.`posts` (
+  `post_id` INT NOT NULL AUTO_INCREMENT,
+  `fk_user_id` INT NOT NULL,
+  `post_description` VARCHAR(500) NULL,
+  `post_img` VARCHAR(45) NULL,
+  PRIMARY KEY (`post_id`),
+  UNIQUE INDEX `post_id_UNIQUE` (`post_id` ASC) VISIBLE,
+  INDEX `fk_posts_1_idx` (`fk_user_id` ASC) VISIBLE,
+  CONSTRAINT `fk_userTopost`
+    FOREIGN KEY (`fk_user_id`)
+    REFERENCES `imgbook`.`users` (`user_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
 -- Dump completed on 2024-12-31 13:32:15
