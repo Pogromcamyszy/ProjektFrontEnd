@@ -4,6 +4,9 @@ import connection from "./Database/Connection.mjs";
 import passport from "passport";
 import session from "express-session";
 import "./Login/loginPassport.mjs";
+import multer from 'multer';
+import fs from 'fs';
+import path from 'path'
 
 const app = express();
 
@@ -46,6 +49,55 @@ connection.query('SELECT 1', (err, results) => {
     console.log('Database connection is alive');
   }
 });
+
+//image storage
+const uploadDir = './uploads';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir); // Directory where files will be saved
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Unique file name
+  },
+});
+
+const upload = multer({ storage });
+
+// api to handle post creation
+app.post('/api/postcreate', upload.single('image'), (req, res) => { 
+  if(!req.user) return res.status(401).json({error: 'failed not auth'});
+  console.log("dsad");
+  const id = req.user.user_id;
+  const { description } = req.body;
+  const file = req.file;
+
+  if (!description || !file) {
+    return res.status(400).json({ error: 'Description and image are required.' });
+  }
+
+  const filePath = file.path; 
+
+  const query = 'INSERT INTO posts (fk_user_id,post_description, post_img) VALUES (?,?, ?)';
+  const values = [id,description, filePath];
+
+  connection.query(query, values, (err, result) => {
+    if (err) {
+      console.error('Failed to insert post:', err);
+      return res.status(500).json({ error: 'Failed to create post.' });
+    }
+
+    res.status(201).json({
+      message: 'Post created successfully.'
+    });
+  });
+});
+
+// Serve static files from the uploads directory
+app.use('/uploads', express.static('uploads'));
 
   app.get("/",(req,res) =>{
     const query = `SELECT * FROM users `;
@@ -139,6 +191,7 @@ app.post('/api/registry', (req, res) => { // Fix argument order: req first, then
     return res.status(200).send(user);
  });
 
+ //get specific user by nick
  app.get('/api/profile/:nick',(req,res) =>{
   const nick = req.params.nick;
   console.log(nick);
@@ -186,4 +239,4 @@ app.post('/api/registry', (req, res) => { // Fix argument order: req first, then
   )
 })
   
-  
+//create post
