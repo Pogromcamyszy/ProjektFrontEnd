@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { IRegistryUser, IRegistryFormMsg } from "./IRegistry.tsx";
 import { validateUserLastName, validateUserName, validateNickName, validateDescription, validatePassword } from "../Validate/ValidateFunctions.tsx";
 import { sendDataObject, checkIfNickAvaible } from "../Fetch/Fetch.tsx";
+import registryStyle from "../styles/registry.module.css";
 
 function UserForm() {
 
@@ -16,30 +17,25 @@ function UserForm() {
   });
 
   const [formDataMsg, setFormDataMsg] = useState<IRegistryFormMsg>({
-    user_name_msg: "",
-    user_lastName_msg: "",
-    user_password_msg: "",
-    user_nickname_msg: "",
-    user_description_msg: "",
+    user_name_msg: " ",
+    user_lastName_msg: " ",
+    user_password_msg: " ",
+    user_nickname_msg: " ",
+    user_description_msg: " ",
   });
 
+
+// Dynamical nickname status display
   const [isNickAvaible, setIsNickAvaible] = useState<boolean>(false);
 
-  // Dynamical nickname status display
   useEffect(() => {
     checkNick();
   }, [formData.user_nickname]);
 
-  const checkNick = async () => {
-    if (validateNickName(formData.user_nickname).state) {
-      const res = await checkIfNickAvaible(formData.user_nickname);
-      if (res.avaible && res.status) {
-        setIsNickAvaible(true);
-        setFormDataMsg({ ...formDataMsg, user_nickname_msg: "Nick is available" });
-      } else if (!res.avaible && res.status) {
-        setIsNickAvaible(false);
-        setFormDataMsg({ ...formDataMsg, user_nickname_msg: "Unavailable" });
-      }
+  const checkNick = async (string:nick) => {
+     const checkAvibility = await axios.post(`localhost:3000/api/taken/${nick}`,formData.user_nickname,{
+
+     });
     }
   };
 
@@ -47,52 +43,65 @@ function UserForm() {
   const handleChange = (e) => {
     const { id, value } = e.target; // Correctly access id and value
     setFormData({ ...formData, [id]: value });
-
-    let validationResult;
-
-    switch (id) {
-      case "user_password":
-        validationResult = validatePassword(value);
-        setFormDataMsg({ ...formDataMsg, user_password_msg: validationResult.msg });
-        break;
-
-      case "user_name":
-        validationResult = validateUserName(value);
-        setFormDataMsg({ ...formDataMsg, user_name_msg: validationResult.msg });
-        break;
-
-      case "user_lastName":
-        validationResult = validateUserLastName(value);
-        setFormDataMsg({ ...formDataMsg, user_lastName_msg: validationResult.msg });
-        break;
-
-      case "user_nickname":
-        validationResult = validateNickName(value);
-        setFormDataMsg({ ...formDataMsg, user_nickname_msg: validationResult.msg });
-        break;
-
-      case "user_description":
-        validationResult = validateDescription(value);
-        setFormDataMsg({ ...formDataMsg, user_description_msg: validationResult.msg });
-        break;
-
-      default:
-        console.log(`Unhandled field with ID: ${id}`);
-        break;
-    }
   };
+
+  const validateForm = async() => {
+    let validationResult;
+    let isValid: boolean = true; // Initializing a flag to keep track of validation status
+    let gatherFormMsg:IRegistryFormMsg = {
+        user_name_msg: "",
+        user_lastName_msg: "",
+        user_password_msg: "",
+        user_nickname_msg: "",
+        user_description_msg: ""
+    };
+    
+    console.log("Validating form...");
+  
+    // Validate password
+    validationResult = validatePassword(formData.user_password);
+    console.log(validationResult.msg);
+    gatherFormMsg = {...gatherFormMsg,user_password_msg:validationResult.msg}
+    isValid = isValid && validationResult.state; // Keep track of whether all validations pass
+  
+    // Validate username
+    validationResult = validateUserName(formData.user_name);
+    console.log(validationResult.msg);
+    gatherFormMsg = {...gatherFormMsg,user_name_msg:validationResult.msg}
+    isValid = isValid && validationResult.state;
+  
+    // Validate last name
+    validationResult = validateUserLastName(formData.user_lastName);
+    console.log(validationResult.msg);
+    gatherFormMsg = {...gatherFormMsg,user_lastName_msg:validationResult.msg}
+    isValid = isValid && validationResult.state;
+  
+    // Validate nickname
+    validationResult = validateNickName(formData.user_nickname);
+    console.log(validationResult.msg);
+    gatherFormMsg = {...gatherFormMsg,user_nickname_msg:validationResult.msg}
+    isValid = isValid && validationResult.state;
+  
+    // Validate description
+    validationResult = validateDescription(formData.user_description);
+    console.log(validationResult.msg);
+    gatherFormMsg = {...gatherFormMsg,user_description_msg:validationResult.msg}
+    isValid = isValid && validationResult.state;
+    
+    setFormDataMsg(gatherFormMsg);
+    return isValid; // Return true if all validations passed, false if any failed
+  }
 
   // Handle form submission
   const handleSubmit = async (e) => {
+
+    const validationResault = await validateForm();
+    console.log("Dsadsadsa "+validationResault);
     setErrorMsg(" ");
     e.preventDefault();
 
     if (
-      validateNickName(formData.user_nickname).state &&
-      validatePassword(formData.user_password).state &&
-      validateDescription(formData.user_description).state &&
-      validateUserName(formData.user_name).state &&
-      validateUserLastName(formData.user_lastName).state &&
+      validationResault &&
       isNickAvaible
     ) {
       const res = await sendDataObject(formData, "/api/registry");
@@ -110,7 +119,8 @@ function UserForm() {
   return (
     <form onSubmit={handleSubmit} method="POST">
       {errorMsg} <br />
-      <label htmlFor="user_name">First Name:</label><br />
+      <h1>Registry</h1>
+      <label htmlFor="user_name">First Name:</label>
       <input
         type="text"
         id="user_name"
@@ -120,7 +130,7 @@ function UserForm() {
       />
       <br />{formDataMsg.user_name_msg} <br />
 
-      <label htmlFor="user_lastName">Last Name:</label><br />
+      <label htmlFor="user_lastName">Last Name:</label>
       <input
         type="text"
         id="user_lastName"
@@ -130,7 +140,7 @@ function UserForm() {
       />
       <br />{formDataMsg.user_lastName_msg} <br />
 
-      <label htmlFor="user_password">Password:</label><br />
+      <label htmlFor="user_password">Password:</label>
       <input
         type="password"
         id="user_password"
@@ -140,7 +150,7 @@ function UserForm() {
       />
       <br />{formDataMsg.user_password_msg} <br />
 
-      <label htmlFor="user_nickname">Nickname:</label><br />
+      <label htmlFor="user_nickname">Nickname:</label>
       <input
         type="text"
         id="user_nickname"
@@ -150,7 +160,7 @@ function UserForm() {
       />
       <br />{formDataMsg.user_nickname_msg} <br />
 
-      <label htmlFor="user_description">Description:</label><br />
+      <label htmlFor="user_description">Description:</label>
       <textarea
         id="user_description"
         rows="4"
@@ -161,7 +171,7 @@ function UserForm() {
       />
       <br /> {formDataMsg.user_description_msg} <br />
 
-      <button type="submit">Submit</button>
+      <button type="submit" className={registryStyle.submit}>Submit</button>
     </form>
   );
 }

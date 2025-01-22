@@ -1,0 +1,31 @@
+form {
+    width:80vh;
+    max-width: 500px;
+    height:50vh;
+    max-width: 800px;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:5%;
+    background-color:white;
+    display:flex;
+    flex-direction:column;
+    align-items:right;
+    justify-content:center;
+    overflow:hidden;
+    padding:5em;
+}
+
+.submit{
+    color:red;
+    width:300px;
+    height:100px;
+}
+
+h1{
+    font-weight: bold; /* Use font-weight instead of font-style for bold text */
+    text-align: center; /* Horizontally center text */
+    margin: 0 auto; /* Center the element itself (if it's block-level) */
+    display: flex; /* Make it flex for vertical alignment */
+    justify-content: center; /* Horizontally center within flex */
+    align-items: center; /* Vertically center within flex */
+ }

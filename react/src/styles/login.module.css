@@ -1,0 +1,71 @@
+
+
+.input{
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 10px; /* Rounded corners */
+    margin-top:5%;
+    margin-bottom:5%;
+    text-align:center;
+    display:flex;
+    width:90vh;
+    height:5%;
+    flex-shrink: 0; 
+    max-width: 400px;
+}
+
+.input:focus {
+    border-color: #0ece37; 
+    box-shadow: 0 0 5px rgba(80, 177, 35, 0.5); 
+    outline: none; 
+  }
+
+
+.input::placeholder {
+    text-align: center; 
+    color: #aaa; 
+    font-style: italic; 
+  }
+
+
+.submit{
+    display:block;
+    height:auto;
+    font-size: large;
+    border-radius:20px;
+    padding:10px;
+    flex-shrink: 0; 
+    color:green;
+} 
+
+.submit:hover{
+    cursor: pointer;
+}
+
+h1{
+   font-style:bold;
+}
+
+.form { 
+    width:80vh;
+    max-width: 500px;
+    height:50vh;
+    max-width: 800px;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:5%;
+    background-color:white;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  
+  .inputError {
+    border-color: red; /* Highlight the border in red */
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Optional: Add a red glow effect */
+  }
+
+  .sysMsg{
+    color:brown;
+  }

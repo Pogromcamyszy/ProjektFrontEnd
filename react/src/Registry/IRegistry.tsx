@@ -1,5 +1,5 @@
 
-interface IRegistryUser {
+export interface IRegistryUser {
     user_name: string,
     user_lastName: string,
     user_password: string,
@@ -7,7 +7,7 @@ interface IRegistryUser {
     user_description: string
 }
 
-interface IRegistryFormMsg {
+export interface IRegistryFormMsg {
     user_name_msg: String,
     user_lastName_msg: string,
     user_password_msg: string,
@@ -15,4 +15,3 @@ interface IRegistryFormMsg {
     user_description_msg: string
 }
 
-export {IRegistryUser, IRegistryFormMsg};

@@ -28,3 +28,7 @@ body{
     background-image:url("https://picsum.photos/184/184");
     
 }
+
+form{
+    background-color: blue;
+}

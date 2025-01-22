@@ -11,7 +11,7 @@ export const AuthContext = createContext([false, () => {}]);
 
 function App() {
   
-  const [isLogged, setIsLogged] = useState(true); // Define state for login status
+  const [isLogged, setIsLogged] = useState(); // Define state for login status
 
   return (
     <AuthContext.Provider value={[isLogged, setIsLogged]}>
@@ -35,15 +35,14 @@ function App() {
                   <div className={navbar.btn}>Placeholder</div>
                   <div className={navbar.btn}><Link to="/createpost">Create Post</Link></div>
                   <div className={navbar.btn}><Link to="/myprofile">My profile</Link></div>
-                  <div className={navbar.btn}><Link to="/profile"></Link></div>
+                  <div className={navbar.btn}><Link to="/profile">Profile</Link></div>
                 </>
               )}
             </div>
           </div>
         </nav>
 
-        <div className="container">
-          <div className="content">
+
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/registry" element={<Registry />} />
@@ -51,8 +50,6 @@ function App() {
               <Route path="/profile/:nick" element={<Profile/>}/>
               <Route path="/createpost" element={<PostCreate/>}/>
             </Routes>
-          </div>
-        </div>
       </BrowserRouter>
     </AuthContext.Provider>
   );

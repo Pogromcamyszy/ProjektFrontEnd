@@ -59,7 +59,7 @@ const getDataObject = async (url: string,param?:string): Promise<object> => {
 
       // Fetch data from API
       const response = await fetch('http://localhost:3000/api/taken/'+nick,{
-        credentials: "include", // Include cookies or authentication tokens
+        credentials: "include"
       });
 
       console.log('Response status: ', response.status); // Log the status code
