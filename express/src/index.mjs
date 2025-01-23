@@ -123,20 +123,22 @@ app.use('/uploads', express.static('uploads'));
 app.get('/api/taken/:nick',(req,res) => {
    const nick = req.params.nick;
    if(req.user){
-   const presentNick = req.user.user_nickname;
-   if(nick === presentNick){
-    return res.status(200).send({message:"Nick is owned by you",agree:true});
+       const presentNick = req.user.user_nickname;
+       if(nick === presentNick){
+       return res.status(200).send({message:"Nick is owned by you",agree:true});
    }
+  }
+
    if(!nick || nick.trim() === ""){
     return res.status(400).send({message:"Bad request"});
    }
-  }
+
    const query = "SELECT user_id FROM users WHERE user_nickname LIKE ?";
    connection.query(query,[nick],(err,resault) =>{
     try{
       if(err) return res.status(500).send({message:"Internal server error"});
-      if(resault.length == 0) return res.status(200).send({message:"There is no user",agree:true});   
-      else return res.status(200).send({message:"user found", agree:false});
+      if(resault.length == 0) return res.status(204).send({message:"There is no user",agree:true});   
+      else return res.status(200).send({message:"user found",agree:false});
     }
     catch(error){
       console.log(error);
@@ -165,7 +167,7 @@ app.post('/api/registry', (req, res) => { // Fix argument order: req first, then
         }
 
         console.log(`user ${user.user_nickname}`);
-        return res.status(200).send({ message: "User created successfully" });
+        return res.status(201).send({ message: "User created successfully" });
       } catch (error) {
         console.error(error); // Log unexpected errors
         return res.status(500).send({ message: "Unexpected error occurred" });
@@ -186,7 +188,6 @@ app.post('/api/registry', (req, res) => { // Fix argument order: req first, then
     if(!req.user){
       return res.status(401).send({message:"Not logged"})
     }
-
     const user = req.user;
     return res.status(200).send(user);
  });

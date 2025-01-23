@@ -27,19 +27,27 @@
   }
 
 
-.submit{
-    display:block;
-    height:auto;
-    font-size: large;
-    border-radius:20px;
-    padding:10px;
-    flex-shrink: 0; 
-    color:green;
-} 
-
-.submit:hover{
+  .submit {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    color: white; /* Text color */
+    background-color: limegreen; /* Lime green background color */
+    width: 200px; /* Button width */
+    height: 50px; /* Button height */
+    margin: 1em auto 0 auto;
+    border: none;
+    border-radius: 25px; /* Increased border-radius for more rounded corners */
+    font-size: 1rem; /* Font size */
     cursor: pointer;
-}
+    transition: background-color 0.3s ease, transform 0.3s ease, font-size 0.3s ease; /* Smooth transitions */
+  }
+  
+  /* Hover effect for submit button */
+  .submit:hover {
+    background-color: lime; /* Lighter lime color on hover */
+    transform: scale(1.1); /* Slightly increase the size of the button */
+    font-size: 1.1rem; /* Slightly increase the text size */
+  }
 
 h1{
    font-style:bold;

@@ -1,31 +1,119 @@
+/* Form container */
 form {
-    width:80vh;
-    max-width: 500px;
-    height:50vh;
+    width: 80vh;
     max-width: 800px;
-    margin-left:auto;
-    margin-right:auto;
-    margin-top:5%;
-    background-color:white;
-    display:flex;
-    flex-direction:column;
-    align-items:right;
-    justify-content:center;
-    overflow:hidden;
-    padding:5em;
+    height: auto; 
+    margin: 5% auto;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2em;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Heading styling */
+  h1 {
+    font-weight: bold;
+    text-align: center;
+    padding: 2rem;
+    margin: 0 auto;
+  }
+  
+  /* Form group box styling */
+  .formGroupBox {
+    width: auto;
+    height: auto;
+  }
+  
+  /* Form group styling: Flexbox container */
+  .formGroup {
+    display: flex;
+    align-items: center; /* Vertically align label and input */
+    margin-bottom: 1.5em; /* Add some space between the fields */
+  }
+  
+  /* Label styling */
+  .formGroup label {
+    text-align: right;
+    width: 30%; /* Set label width */
+    margin-right: 1rem; /* Even further reduced margin between label and input */
+    white-space: nowrap; /* Prevent the label from wrapping to the next line */
+  }
+  
+  /* Input and textarea styling */
+  /* Input and textarea styling */
+.formGroup input,
+.formGroup textarea {
+  flex-grow: 1; /* Allow input to grow */
+  max-width: 350px; /* Limit input width */
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 15px; /* Increased border-radius for more rounded corners */
 }
 
-.submit{
+.formGroup input::placeholder,
+.formGroup textarea::placeholder {
+  text-align: center; /* Center the placeholder text */
+}
+
+.formGroup input:hover,
+.formGroup textarea:hover,
+.formGroup input:focus,
+.formGroup textarea:focus {
+  transform: scale(1.05); /* Slightly increase the size of the input */
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.6); /* Green glowing effect */
+  border-color: limegreen; /* Change border color to limegreen on hover and focus */
+  outline:none;
+}
+
+  
+  /* Textarea specific styling */
+  textarea {
+    resize: vertical; /* Allow vertical resizing only */
+  }
+  
+  /* Submit button styling */
+  .submit {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+    background-color: red;
+    width: 200px;
+    height: 50px;
+    margin: 1em auto 0 auto;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .submit {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    color: white; /* Text color */
+    background-color: limegreen; /* Lime green background color */
+    width: 200px; /* Button width */
+    height: 50px; /* Button height */
+    margin: 1em auto 0 auto;
+    border: none;
+    border-radius: 25px; /* Increased border-radius for more rounded corners */
+    font-size: 1rem; /* Font size */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease, font-size 0.3s ease; /* Smooth transitions */
+  }
+  
+  /* Hover effect for submit button */
+  .submit:hover {
+    background-color: lime; /* Lighter lime color on hover */
+    transform: scale(1.1); /* Slightly increase the size of the button */
+    font-size: 1.1rem; /* Slightly increase the text size */
+  }
+
+  .inputMsg{
+    text-align:center;
     color:red;
-    width:300px;
-    height:100px;
-}
-
-h1{
-    font-weight: bold; /* Use font-weight instead of font-style for bold text */
-    text-align: center; /* Horizontally center text */
-    margin: 0 auto; /* Center the element itself (if it's block-level) */
-    display: flex; /* Make it flex for vertical alignment */
-    justify-content: center; /* Horizontally center within flex */
-    align-items: center; /* Vertically center within flex */
- }
+    font-weight:bold;
+    text-decoration:underline;
+  }

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { IRegistryUser, IRegistryFormMsg } from "./IRegistry.tsx";
 import { validateUserLastName, validateUserName, validateNickName, validateDescription, validatePassword } from "../Validate/ValidateFunctions.tsx";
-import { sendDataObject, checkIfNickAvaible } from "../Fetch/Fetch.tsx";
+import { sendDataObject} from "../Fetch/Fetch.tsx";
 import registryStyle from "../styles/registry.module.css";
+import axios from 'axios';
 
 function UserForm() {
-
   const [errorMsg, setErrorMsg] = useState<string>("");
 
   const [formData, setFormData] = useState<IRegistryUser>({
@@ -29,20 +29,19 @@ function UserForm() {
   const [isNickAvaible, setIsNickAvaible] = useState<boolean>(false);
 
   useEffect(() => {
-    checkNick();
+    checkNick(formData.user_nickname);
   }, [formData.user_nickname]);
 
-  const checkNick = async (string:nick) => {
+  const checkNick = async (nick:string) => {
      const checkAvibility = await axios.post(`localhost:3000/api/taken/${nick}`,formData.user_nickname,{
 
      });
-    }
-  };
+  }
 
   // Sets values and validates them
   const handleChange = (e) => {
-    const { id, value } = e.target; // Correctly access id and value
-    setFormData({ ...formData, [id]: value });
+    const { name, value } = e.target; // Correctly access name and value
+    setFormData({ ...formData, [name]: value });
   };
 
   const validateForm = async() => {
@@ -107,7 +106,6 @@ function UserForm() {
       const res = await sendDataObject(formData, "/api/registry");
       if (res === 200) {
         setErrorMsg("User was successfully created");
-        checkNick();
       } else if (res === 401) {
         setErrorMsg("Cannot create user while logged in");
       } else {
@@ -117,62 +115,81 @@ function UserForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} method="POST">
-      {errorMsg} <br />
-      <h1>Registry</h1>
+<form onSubmit={handleSubmit} method="POST">
+  {errorMsg} <br />
+  <h1>Registry</h1>
+
+  <div className={registryStyle.formGroupConatainer}>
+    
+    {/* First Name */}
+    <div className={registryStyle.formGroup}>
       <label htmlFor="user_name">First Name:</label>
       <input
         type="text"
-        id="user_name"
+        name="user_name"
         placeholder="Type your name"
         onChange={handleChange}
         required
       />
-      <br />{formDataMsg.user_name_msg} <br />
+    </div>
+    <div className={registryStyle.inputMsg}>{formDataMsg.user_name_msg} </div><br />
 
+    {/* Last Name */}
+    <div className={registryStyle.formGroup}>
       <label htmlFor="user_lastName">Last Name:</label>
       <input
         type="text"
-        id="user_lastName"
+        name="user_lastName"
         placeholder="Type your last name"
         onChange={handleChange}
         required
       />
-      <br />{formDataMsg.user_lastName_msg} <br />
-
+    </div>
+    <div className={registryStyle.inputMsg}>{formDataMsg.user_lastName_msg}</div> <br />
+    
+    {/* Password */}
+    <div className={registryStyle.formGroup}>
       <label htmlFor="user_password">Password:</label>
       <input
         type="password"
-        id="user_password"
+        name="user_password"
         placeholder="Insert password"
         onChange={handleChange}
         required
       />
-      <br />{formDataMsg.user_password_msg} <br />
-
+    </div>
+    <div className={registryStyle.inputMsg}>{formDataMsg.user_password_msg}</div> <br />
+    
+    {/* Nickname */}
+    <div className={registryStyle.formGroup}>
       <label htmlFor="user_nickname">Nickname:</label>
       <input
         type="text"
-        id="user_nickname"
+        name="user_nickname"
         placeholder="Type your Nickname"
         onChange={handleChange}
         required
       />
-      <br />{formDataMsg.user_nickname_msg} <br />
-
+    </div>
+    <div className={registryStyle.inputMsg}>{formDataMsg.user_nickname_msg}</div> <br />
+    
+    {/* Description */}
+    <div className={registryStyle.formGroup}>
       <label htmlFor="user_description">Description:</label>
       <textarea
-        id="user_description"
+        name="user_description"
         rows="4"
         cols="50"
         placeholder="Type your description (OPTIONAL)"
         onChange={handleChange}
         maxLength="300"
       />
-      <br /> {formDataMsg.user_description_msg} <br />
+    </div>
+    <div className={registryStyle.inputMsg}>{formDataMsg.user_description_msg}</div> <br />
+  </div>
 
-      <button type="submit" className={registryStyle.submit}>Submit</button>
-    </form>
+  <button type="submit" className={registryStyle.submit}>Submit</button>
+</form>
   );
 }
 
