@@ -26,17 +26,38 @@ function UserForm() {
 
 
 // Dynamical nickname status display
-  const [isNickAvaible, setIsNickAvaible] = useState<boolean>(false);
 
   useEffect(() => {
-    checkNick(formData.user_nickname);
-  }, [formData.user_nickname]);
+     if(validateNickName(formData.user_nickname).state){
+       ///tu skonczylem
+     }
+  },[formData.user_nickname]);
 
-  const checkNick = async (nick:string) => {
-     const checkAvibility = await axios.post(`localhost:3000/api/taken/${nick}`,formData.user_nickname,{
-
-     });
-  }
+  const checkNickAvibility = async (nick: string) => {
+    try {
+      const resault = await axios.get(`http://localhost:3000/api/taken/${nick}`, {
+        withCredentials: true,
+      });
+  
+      if (resault.data.agree) {
+        console.log("Nickname not found (available)");
+      } else {
+        console.log("Nickname found (not available)");
+      }
+    } catch (error: any) {
+      // Handle errors like 404 here
+      if (error.response) {
+        console.log(`Error: ${error.response.status} - ${error.response.data.message}`);
+        if (error.response.status === 404) {
+          alert("Bad request error 404 occured");
+        }
+      } 
+      else {
+        alert("Error occured please try again later");
+      }
+      return false;
+    }
+  };
 
   // Sets values and validates them
   const handleChange = (e) => {
@@ -134,7 +155,6 @@ function UserForm() {
     </div>
     <div className={registryStyle.inputMsg}>{formDataMsg.user_name_msg} </div><br />
 
-    {/* Last Name */}
     <div className={registryStyle.formGroup}>
       <label htmlFor="user_lastName">Last Name:</label>
       <input
@@ -147,7 +167,6 @@ function UserForm() {
     </div>
     <div className={registryStyle.inputMsg}>{formDataMsg.user_lastName_msg}</div> <br />
     
-    {/* Password */}
     <div className={registryStyle.formGroup}>
       <label htmlFor="user_password">Password:</label>
       <input
@@ -160,7 +179,6 @@ function UserForm() {
     </div>
     <div className={registryStyle.inputMsg}>{formDataMsg.user_password_msg}</div> <br />
     
-    {/* Nickname */}
     <div className={registryStyle.formGroup}>
       <label htmlFor="user_nickname">Nickname:</label>
       <input
@@ -173,7 +191,6 @@ function UserForm() {
     </div>
     <div className={registryStyle.inputMsg}>{formDataMsg.user_nickname_msg}</div> <br />
     
-    {/* Description */}
     <div className={registryStyle.formGroup}>
       <label htmlFor="user_description">Description:</label>
       <textarea
@@ -189,6 +206,7 @@ function UserForm() {
   </div>
 
   <button type="submit" className={registryStyle.submit}>Submit</button>
+  <button onClick={(e) => (checkNickAvibility(formData.user_nickname))}>button</button>
 </form>
   );
 }

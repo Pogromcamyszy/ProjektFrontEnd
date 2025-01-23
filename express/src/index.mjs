@@ -137,7 +137,10 @@ app.get('/api/taken/:nick',(req,res) => {
    connection.query(query,[nick],(err,resault) =>{
     try{
       if(err) return res.status(500).send({message:"Internal server error"});
-      if(resault.length == 0) return res.status(204).send({message:"There is no user",agree:true});   
+      if(resault.length == 0) {
+        console.log("happening");
+        return res.status(200).send({message:"There is no user",agree:true});
+      }   
       else return res.status(200).send({message:"user found",agree:false});
     }
     catch(error){
