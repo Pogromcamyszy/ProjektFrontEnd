@@ -6,6 +6,7 @@ import MyProfile from "./Profile/MyProfile.tsx";
 import Profile from "./Profile/Profile.tsx";
 import navbar from "./styles/navbar.module.css";
 import PostCreate from "./Posts/PostCreate.tsx";
+import ProfileHead from "./Profile/ProfileHead.tsx";
 import { getAuth } from "./Fetch/Fetch.tsx";
 // Create the context
 export const AuthContext = createContext([false, () => {}]);
@@ -17,7 +18,6 @@ function App() {
   useEffect(() => {
     const checkLoginStatus = async() =>{
     const res = await getAuth();
-    console.log(res);
     if (res === 200) {
       setIsLogged(true); // Set the login status to true
     } else if (res === 401) {
@@ -27,7 +27,6 @@ function App() {
     checkLoginStatus();
   }, []);
 
-  console.log(isLogged);
   return (
     <AuthContext.Provider value={[isLogged, setIsLogged]}>
       <BrowserRouter>
@@ -47,7 +46,7 @@ function App() {
               ) : (
                 <>
                   <div className={navbar.btn}>Placeholder</div>
-                  <div className={navbar.btn}>Placeholder</div>
+                  <div className={navbar.btn}><Link to="/profilehead">ProfileHead</Link></div>
                   <div className={navbar.btn}><Link to="/createpost">Create Post</Link></div>
                   <div className={navbar.btn}><Link to="/myprofile">My profile</Link></div>
                   <div className={navbar.btn}><Link to="/profile">Profile</Link></div>
@@ -64,9 +63,11 @@ function App() {
               <Route path="/myprofile" element={<MyProfile/>}/>
               <Route path="/profile/:nick" element={<Profile/>}/>
               <Route path="/createpost" element={<PostCreate/>}/>
+              <Route path="/profilehead" element={<ProfileHead />} />
             </Routes>
       </BrowserRouter>
     </AuthContext.Provider>
+
   );
 }
 

@@ -188,12 +188,17 @@ app.post('/api/registry', (req, res) => { // Fix argument order: req first, then
 
 //// get Peofile
   app.get('/api/profile',(req,res) => {
-    if(!req.user){
-      return res.status(401).send({message:"Not logged"})
+    try{
+      if(!req.user){
+        return res.status(401).send({message:"Not logged"})
+      }
+      const user = req.user;
+      return res.status(200).send(user);
     }
-    const user = req.user;
-    return res.status(200).send(user);
- });
+    catch(error){
+      return res.status(error.status).send({message:`Error occuered ${error.status}`});
+    }
+     });
 
  //get specific user by nick
  app.get('/api/profile/:nick',(req,res) =>{

@@ -4,12 +4,15 @@ import axios from 'axios';
 import login from "../styles/login.module.css";
 import { useNavigate } from "react-router-dom";
 import RedirLogin from "../Auth/RedirLogin.tsx"
-import CheckAuth from "../Auth/CheckAuth.tsx";
+import { AuthContext } from "../App.tsx";
+
 
 export default function Login() {
   
   ///redirect to my profile if user is logged
   RedirLogin();
+
+  const [isLogged,setIsLogged] = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -43,6 +46,7 @@ export default function Login() {
        });
        console.log(response.status);
        if(response.status == 200){
+        setIsLogged(true);
         navigate("/myprofile");
        }
       }

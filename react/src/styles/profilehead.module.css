@@ -1,0 +1,83 @@
+.container {
+    background-color: white;
+    display: flex;
+    padding: 1rem;
+    width: 100%;
+    max-width: 56.25rem;
+    height: auto;
+    align-items: center;
+    flex-wrap: wrap; /* Allow items to wrap if needed */
+    box-sizing: border-box;
+  }
+  
+  .profpicture {
+    background-color: blue;
+    width: 11.5rem;
+    height: 11.5rem;
+    margin-right: 1.25rem;
+  }
+  
+  .userInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: auto;
+  }
+  
+  .name {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.625rem;
+  }
+  
+  .additionalInfo {
+    font-size: 1rem;
+  }
+  
+  .additionalInfo div {
+    margin-bottom: 0.3125rem;
+  }
+  
+  @media (max-width: 48rem) {
+    .container {
+      flex-direction: row; /* Ensure content stays in one line */
+      align-items: center;
+      padding: 1rem;
+    }
+  
+    .profpicture {
+      width: 9.375rem;
+      height: 9.375rem;
+      margin-right: 1rem;
+    }
+  
+    .name {
+      font-size: 1.125rem;
+    }
+  
+    .additionalInfo {
+      font-size: 0.875rem;
+    }
+  }
+  
+  @media (max-width: 30rem) {
+    .container {
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+  
+    .profpicture {
+      width: 7.5rem;
+      height: 7.5rem;
+      margin-bottom: 1rem;
+    }
+  
+    .name {
+      font-size: 1rem;
+    }
+  
+    .additionalInfo {
+      font-size: 0.75rem;
+    }
+  }
