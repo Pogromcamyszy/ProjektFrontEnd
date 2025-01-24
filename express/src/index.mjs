@@ -138,13 +138,12 @@ app.get('/api/taken/:nick',(req,res) => {
     try{
       if(err) return res.status(500).send({message:"Internal server error"});
       if(resault.length == 0) {
-        console.log("happening");
         return res.status(200).send({message:"There is no user",agree:true});
       }   
       else return res.status(200).send({message:"user found",agree:false});
     }
     catch(error){
-      console.log(error);
+      return(error.status);
     }
    })
 });
@@ -179,6 +178,7 @@ app.post('/api/registry', (req, res) => { // Fix argument order: req first, then
   );
 });
 
+//getauth
   app.get('/api/auth', (req,res) =>{
     if(!req.user){
        return res.sendStatus(401);

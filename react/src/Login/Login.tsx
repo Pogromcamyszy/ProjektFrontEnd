@@ -3,18 +3,17 @@ import User from "./ILogin.tsx";
 import axios from 'axios';
 import login from "../styles/login.module.css";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../App.tsx";
+import RedirLogin from "../Auth/RedirLogin.tsx"
+import CheckAuth from "../Auth/CheckAuth.tsx";
 
 export default function Login() {
-
-  const [isLogged,setIsLogged] = useContext(AuthContext);
+  
+  ///redirect to my profile if user is logged
+  RedirLogin();
 
   const navigate = useNavigate();
 
-  useEffect(()=>{
-    if(isLogged) navigate("/myprofile");
-  },[isLogged])
-
+  
   const [user, setUser] = useState<User>({ user_nickname: "", user_password: "" });
   
   const [inCorrectUser,setInCorrectUser] = useState<boolean>(false);
@@ -31,10 +30,10 @@ export default function Login() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent form from submitting (and reloading the page)
-    sendUser();
+    loginUser();
   };
 
-  const sendUser = async() =>{
+  const loginUser = async() =>{
     try{
        const response = await axios.post('http://localhost:3000/api/login',user,{
         headers: {
@@ -44,7 +43,7 @@ export default function Login() {
        });
        console.log(response.status);
        if(response.status == 200){
-        setIsLogged(true);
+        navigate("/myprofile");
        }
       }
 

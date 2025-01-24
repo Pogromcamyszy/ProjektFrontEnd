@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import { checkIfNickAvaible, getDataObject, patchObject, sendDataObject } from '../Fetch/Fetch';
+import {  getDataObject, patchObject, sendDataObject } from '../Fetch/Fetch';
 import { validateDescription,validateNickName,validateUserLastName,validateUserName } from '../Validate/ValidateFunctions';
 
 export default function MyProfile(){
@@ -41,7 +41,7 @@ export default function MyProfile(){
     const cancleEdit = () => {
         setIsEdited(false);
     }
-
+    /*
     const sendData = async() => {
         if(validateUserName(userEdit.user_name).state &&
            validateUserLastName(userEdit.user_lastName).state&&
@@ -79,6 +79,7 @@ export default function MyProfile(){
             setSysMsg(errorText);
         }
     }
+        */
 
     const handleChange = (e) =>{
         const name = e.target.name;

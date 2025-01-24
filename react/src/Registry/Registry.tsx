@@ -1,13 +1,21 @@
 import React, { useState, useEffect, useContext } from "react";
 import { IRegistryUser, IRegistryFormMsg } from "./IRegistry.tsx";
 import { validateUserLastName, validateUserName, validateNickName, validateDescription, validatePassword } from "../Validate/ValidateFunctions.tsx";
-import { sendDataObject} from "../Fetch/Fetch.tsx";
+import {checkNickAvibility} from "../Fetch/Fetch.tsx";
 import registryStyle from "../styles/registry.module.css";
-import axios from 'axios';
+import {useNavigate} from "react-router-dom";
+import axios from "axios";
+import RedirLogin from "../Auth/RedirLogin.tsx"
 
 function UserForm() {
-  const [errorMsg, setErrorMsg] = useState<string>("");
 
+  //check if user is logged if yes redirect to myprofile
+  const navigate = useNavigate();
+
+  //refirect to myprofile if user is logged
+  RedirLogin();
+
+// storeage off data from form and msg for them if filled with invalid data
   const [formData, setFormData] = useState<IRegistryUser>({
     user_name: "",
     user_lastName: "",
@@ -23,41 +31,29 @@ function UserForm() {
     user_nickname_msg: " ",
     user_description_msg: " ",
   });
-
-
-// Dynamical nickname status display
-
-  useEffect(() => {
-     if(validateNickName(formData.user_nickname).state){
-       ///tu skonczylem
-     }
-  },[formData.user_nickname]);
-
-  const checkNickAvibility = async (nick: string) => {
-    try {
-      const resault = await axios.get(`http://localhost:3000/api/taken/${nick}`, {
-        withCredentials: true,
-      });
   
-      if (resault.data.agree) {
-        console.log("Nickname not found (available)");
-      } else {
-        console.log("Nickname found (not available)");
-      }
-    } catch (error: any) {
-      // Handle errors like 404 here
-      if (error.response) {
-        console.log(`Error: ${error.response.status} - ${error.response.data.message}`);
-        if (error.response.status === 404) {
-          alert("Bad request error 404 occured");
-        }
-      } 
-      else {
-        alert("Error occured please try again later");
-      }
-      return false;
-    }
-  };
+// Dynamical nickname status display if nickname in form is valide between 8 and 14 characters
+const [isNickAvaible,setIsNickAvaible] = useState<boolean>(false);
+useEffect(() => {
+  if (validateNickName(formData.user_nickname).state) {
+    const checkNick = async () => {
+      const res = await checkNickAvibility(formData.user_nickname);
+      setIsNickAvaible(res);
+      setFormDataMsg((prev) => ({
+        ...prev,
+        user_nickname_msg: res
+          ? "Nick is available"
+          : "Nick is already in use",
+      }));
+    };
+    checkNick();
+  } else {
+    setFormDataMsg((prev) => ({
+      ...prev,
+      user_nickname_msg: " ",
+    }));
+  }
+}, [formData.user_nickname]);
 
   // Sets values and validates them
   const handleChange = (e) => {
@@ -114,30 +110,33 @@ function UserForm() {
 
   // Handle form submission
   const handleSubmit = async (e) => {
-
     const validationResault = await validateForm();
-    console.log("Dsadsadsa "+validationResault);
-    setErrorMsg(" ");
     e.preventDefault();
 
     if (
       validationResault &&
       isNickAvaible
     ) {
-      const res = await sendDataObject(formData, "/api/registry");
-      if (res === 200) {
-        setErrorMsg("User was successfully created");
-      } else if (res === 401) {
-        setErrorMsg("Cannot create user while logged in");
-      } else {
-        setErrorMsg("Problems with sending data. Please try later.");
-      }
+        const res = await axios.post("http://localhost:3000/api/registry",formData,{
+          headers: {
+            'Content-Type': 'application/json',  // Optional, if you're sending JSON data
+          },
+          withCredentials: true, 
+         });
+        try{
+          if(res.status == 201){
+            navigate("/login");
+        }
+        }
+      catch(error){
+         alert(`Something gone wrong while sending user data error: ${error.status}`);
+      }   
     }
-  };
+  }
+  
 
   return (
 <form onSubmit={handleSubmit} method="POST">
-  {errorMsg} <br />
   <h1>Registry</h1>
 
   <div className={registryStyle.formGroupConatainer}>
@@ -206,7 +205,6 @@ function UserForm() {
   </div>
 
   <button type="submit" className={registryStyle.submit}>Submit</button>
-  <button onClick={(e) => (checkNickAvibility(formData.user_nickname))}>button</button>
 </form>
   );
 }

@@ -6,13 +6,28 @@ import MyProfile from "./Profile/MyProfile.tsx";
 import Profile from "./Profile/Profile.tsx";
 import navbar from "./styles/navbar.module.css";
 import PostCreate from "./Posts/PostCreate.tsx";
+import { getAuth } from "./Fetch/Fetch.tsx";
 // Create the context
 export const AuthContext = createContext([false, () => {}]);
 
 function App() {
   
-  const [isLogged, setIsLogged] = useState(); // Define state for login status
+  // Define state for login status and check is user is loggin by useEffect
+  const [isLogged, setIsLogged] = useState(); 
+  useEffect(() => {
+    const checkLoginStatus = async() =>{
+    const res = await getAuth();
+    console.log(res);
+    if (res === 200) {
+      setIsLogged(true); // Set the login status to true
+    } else if (res === 401) {
+      setIsLogged(false); // Set the login status to false
+    }
+  }
+    checkLoginStatus();
+  }, []);
 
+  console.log(isLogged);
   return (
     <AuthContext.Provider value={[isLogged, setIsLogged]}>
       <BrowserRouter>

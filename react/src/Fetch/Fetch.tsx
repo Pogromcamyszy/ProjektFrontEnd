@@ -1,5 +1,5 @@
-
-
+import axios from "axios";
+///to delete
 const sendDataObject = async (sendData: object,url: string) => {
     try {
       const res = await fetch("http://localhost:3000"+url,{
@@ -22,7 +22,7 @@ const sendDataObject = async (sendData: object,url: string) => {
       console.log("Error:", error);
     }
   };
-
+/// to delete 
 const getDataObject = async (url: string,param?:string): Promise<object> => {
     let status;
     try {
@@ -48,42 +48,40 @@ const getDataObject = async (url: string,param?:string): Promise<object> => {
     }
   };
 
-  const checkIfNickAvaible = async (nick: string) => {  
-    const statment = {
-      avaible: false,
-      status: 404
-    };
-
+// function to check if nick is avaible return true if is avaible or false if is taken used in registry and edit profile 
+  const checkNickAvibility = async (nick: string) => {
     try {
-      console.log("Checking if nickname is available for: ", nick);
-
-      // Fetch data from API
-      const response = await fetch('http://localhost:3000/api/taken/'+nick,{
-        credentials: "include"
+      const resault = await axios.get(`http://localhost:3000/api/taken/${nick}`, {
+        withCredentials: true,
       });
-
-      console.log('Response status: ', response.status); // Log the status code
-      
-      if (response.ok) {
-        const result = await response.json();
-        statment.avaible = result.agree;
+  
+      if (resault.data.agree) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error: any) {
+      if (error.response) {
+        console.log(`Error: ${error.response.status} - ${error.response.data.message}`);
+        if (error.response.status === 404) {
+          alert("Bad request error 404 occured");
+        }
       } 
-      statment.status = response.status;
-    }finally {
-      console.log(statment);
-      return statment;
+      else {
+        alert("Error occured please try again later");
+      }
     }
   };
 
 //auth user if logged
 const getAuth = async() => {
    try{
-    const res = await fetch("http://localhost:3000/api/auth",{
-      credentials: "include", // Include cookies or authentication tokens
+    const res = await axios.get("http://localhost:3000/api/auth",{
+      withCredentials:true, // Include cookies or authentication tokens
     });
     return res.status;
    }catch(error){
-    console.log("somethingwrong")
+    return error.status;
    }
 }
 
@@ -107,4 +105,4 @@ const patchObject = async(data,url) =>{
   };
 
 
-  export {sendDataObject,getDataObject,checkIfNickAvaible,getAuth,patchObject}
+  export {sendDataObject,getDataObject,checkNickAvibility,getAuth,patchObject}
