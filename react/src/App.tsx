@@ -50,6 +50,7 @@ function App() {
                   <div className={navbar.btn}><Link to="/createpost">Create Post</Link></div>
                   <div className={navbar.btn}><Link to="/myprofile">My profile</Link></div>
                   <div className={navbar.btn}><Link to="/profile">Profile</Link></div>
+                  
                 </>
               )}
             </div>
