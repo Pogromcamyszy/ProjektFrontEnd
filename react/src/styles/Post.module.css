@@ -1,0 +1,77 @@
+/* Post.module.css */
+
+.postContainer {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  width: 100%;
+  max-width: 56.25rem;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  margin: 1rem auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.imageWrapper {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.postImage {
+  max-width: 100%;
+  max-height:600px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.textContent {
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.postDescription {
+  font-size: 1.125rem;
+  line-height: 1.5;
+  margin-bottom: 0.625rem;
+  color: #333;
+}
+
+.userNickname {
+  font-size: 1rem;
+  color: #555;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 48rem) {
+  .postContainer {
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  .postImage {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 30rem) {
+  .postContainer {
+    padding: 1rem;
+    max-width: 100%;
+  }
+
+  .postImage {
+    max-width: 80%;
+    height:100px;
+  }
+
+  .postDescription {
+    font-size: 1rem;
+  }
+}

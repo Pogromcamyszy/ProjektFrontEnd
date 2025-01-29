@@ -246,6 +246,36 @@ app.post('/api/registry', (req, res) => { // Fix argument order: req first, then
       return res.sendStatus(200);
     }
   )
-})
-  
-//create post
+})  
+
+
+/// get post info 
+app.get("/api/getPostInfo/:id", (req, res) => {
+  const postId = req.params.id;  // Get post_id from route parameter
+
+  const query = `
+    SELECT 
+      u.user_id, 
+      u.user_nickname, 
+      p.*
+    FROM 
+      users u
+    JOIN 
+      posts p ON u.user_id = p.fk_user_id
+    WHERE 
+      p.post_id = ?;
+  `;
+
+  connection.execute(query, [postId], (err, results) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res.status(500).json({ error: "Database query failed" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    res.json(results[0]); 
+  });
+});

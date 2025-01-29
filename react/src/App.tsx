@@ -46,7 +46,7 @@ function App() {
               ) : (
                 <>
                   <div className={navbar.btn}>Placeholder</div>
-                  <div className={navbar.btn}><Link to="/profilehead">ProfileHead</Link></div>
+                  <div className={navbar.btn}>Placeholder</div>
                   <div className={navbar.btn}><Link to="/createpost">Create Post</Link></div>
                   <div className={navbar.btn}><Link to="/myprofile">My profile</Link></div>
                   <div className={navbar.btn}><Link to="/profile">Profile</Link></div>
@@ -64,7 +64,6 @@ function App() {
               <Route path="/myprofile" element={<MyProfile/>}/>
               <Route path="/profile/:nick" element={<Profile/>}/>
               <Route path="/createpost" element={<PostCreate/>}/>
-              <Route path="/profilehead" element={<ProfileHead />} />
             </Routes>
       </BrowserRouter>
     </AuthContext.Provider>

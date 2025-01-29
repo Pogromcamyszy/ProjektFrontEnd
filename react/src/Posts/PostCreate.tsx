@@ -1,14 +1,14 @@
 import React, { useState } from "react";
+import styles from "../styles/PostCreate.module.css"; // Import the CSS module
 
 export default function PostCreate() {
-  const [image, setImage] = useState(null); // For storing the image file
-  const [description, setDescription] = useState("");
-  const [preview, setPreview] = useState(null); // For previewing the image
+  const [image, setImage] = useState<File | null>(null); // For storing the image file
+  const [description, setDescription] = useState<string>("");
+  const [preview, setPreview] = useState<string | null>(null); // For previewing the image
 
   // Handle image file selection
-  const handleImage = (e) => {
-    const file = e.target.files[0];
-    console.log(file);
+  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       setImage(file); // Store the file in state
       setPreview(URL.createObjectURL(file)); // Create a preview URL for the selected image
@@ -50,24 +50,35 @@ export default function PostCreate() {
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       {/* Show preview of the selected image */}
       {preview && (
-        <p>
-          <img src={preview} alt="Preview" style={{ width: "600px", height: "600px" }} />
-        </p>
+        <div className={styles.preview}>
+          <img src={preview} alt="Preview" />
+        </div>
       )}
+
       {/* File input for image selection */}
-      <input type="file" name="image" accept="image/*" onChange={handleImage} />
-      {/* Optional: Description input */}
+      <input
+        type="file"
+        name="image"
+        accept="image/*"
+        onChange={handleImage}
+        className={styles.fileInput}
+      />
+
+      {/* Description input */}
       <textarea
         placeholder="Enter description..."
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        style={{ width: "100%", height: "100px" }}
+        className={styles.textarea}
       />
+
       {/* Upload button */}
-      <button onClick={handleUpload}>Upload Image</button>
+      <button onClick={handleUpload} className={styles.uploadButton}>
+        Upload Image
+      </button>
     </div>
   );
 }
