@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import styles from "../styles/PostCreate.module.css"; // Import the CSS module
+import useRedirectLogout from "../Auth/RedirLogout";
 
 export default function PostCreate() {
+
+  useRedirectLogout();
+
   const [image, setImage] = useState<File | null>(null); // For storing the image file
   const [description, setDescription] = useState<string>("");
   const [preview, setPreview] = useState<string | null>(null); // For previewing the image

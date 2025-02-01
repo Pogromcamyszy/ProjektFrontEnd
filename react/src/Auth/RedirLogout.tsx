@@ -1,20 +1,20 @@
-
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
 import { AuthContext } from "../App.tsx";
 import CheckAuth from "./CheckAuth.tsx";
 
-//if user is logout redirect to login page and set AuthContext to false;
 const useRedirectLogout = () => {
-  const [isLogged] = useContext(AuthContext);
+  const [isLogged] = useContext(AuthContext); // Access isLogged from AuthContext
   const navigate = useNavigate();
   CheckAuth();
+
   useEffect(() => {
     if (!isLogged) {
+      // If the user is not logged in, redirect to login page
       navigate('/login');
     }
-  }, [isLogged]);
+  }, [isLogged, navigate]); // Ensure the effect re-runs when isLogged changes
+
 };
 
 export default useRedirectLogout;

@@ -6,7 +6,7 @@ import MyProfile from "./Profile/MyProfile.tsx";
 import Profile from "./Profile/Profile.tsx";
 import navbar from "./styles/navbar.module.css";
 import PostCreate from "./Posts/PostCreate.tsx";
-import ProfileHead from "./Profile/ProfileHead.tsx";
+import Logout from "./Auth/Logout.tsx"
 import { getAuth } from "./Fetch/Fetch.tsx";
 // Create the context
 export const AuthContext = createContext([false, () => {}]);
@@ -49,7 +49,7 @@ function App() {
                   <div className={navbar.btn}>Placeholder</div>
                   <div className={navbar.btn}><Link to="/createpost">Create Post</Link></div>
                   <div className={navbar.btn}><Link to="/myprofile">My profile</Link></div>
-                  <div className={navbar.btn}><Link to="/profile">Profile</Link></div>
+                  <div className={navbar.btn}><Link to="/logout">Logout</Link></div>
                   
                 </>
               )}
@@ -62,7 +62,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/registry" element={<Registry />} />
               <Route path="/myprofile" element={<MyProfile/>}/>
-              <Route path="/profile/:nick" element={<Profile/>}/>
+              <Route path="/logout" element={<Logout/>}/>
               <Route path="/createpost" element={<PostCreate/>}/>
             </Routes>
       </BrowserRouter>

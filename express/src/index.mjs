@@ -279,3 +279,153 @@ app.get("/api/getPostInfo/:id", (req, res) => {
     res.json(results[0]); 
   });
 });
+
+///add comments
+app.post("/api/addComment", (req, res) => {
+  console.log("dasdasdasdas");
+  const content  = req.body.content;
+  const postId = req.body.postId;
+  const user_id = req.user.user_id; // Assuming req.user contains the logged-in user's information
+  console.log(req.body);
+  console.log(postId);
+
+  // SQL Insert Queryuser_id
+  const query = "INSERT INTO comments (user_id, post_id, text) VALUES (?, ?, ?)";
+
+  // Insert the comment into the database
+  connection.execute(query, [user_id, postId, content], (err, result) => {
+    if (err) {
+      console.error("Error inserting comment:", err);
+      return res.status(500).json({ message: "Failed to add comment" });
+    }
+
+    console.log("New comment added:", result);
+    return res.status(201).json({
+      message: "Comment added successfully",
+      comment: { user_id, postId, text: content },
+    });
+  });
+});
+
+
+
+///getComment 
+app.get("/api/getComment/:commentId", (req, res) => {
+  const { commentId } = req.params;
+  const userId = req.user?.user_id; // Assuming user authentication middleware
+
+  const query = `
+    SELECT 
+      comments.comment_id, 
+      users.user_nickname, 
+      comments.text, 
+      comments.user_id 
+    FROM comments
+    JOIN users ON comments.user_id = users.user_id
+    WHERE comments.comment_id = ?
+  `;
+
+  connection.query(query, [commentId], (err, results) => {
+    if (err) {
+      console.error("Error fetching comment:", err);
+      return res.status(500).json({ message: "Failed to retrieve comment" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    const comment = results[0];
+
+    const isOwner = comment.user_id === userId;
+
+    res.status(200).json({
+      comment_id: comment.comment_id,
+      user_nickname: comment.user_nickname,
+      text: comment.text,
+      isOwner,
+    });
+  });
+});
+
+///get IDs of user post 
+app.get("/api/getUserPosts/:userId", (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  const query = "SELECT post_id FROM posts WHERE fk_user_id = ?";
+  
+  connection.execute(query, [userId], (err, results) => {
+    if (err) {
+      console.error("Error fetching user posts:", err);
+      return res.status(500).json({ message: "Failed to fetch posts" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "No posts found for this user" });
+    }
+
+    res.status(200).json(results);
+  });
+});
+
+//getMyId
+
+app.get("/api/getMyID",(req, res) => {
+  const userId = req.user.user_id;
+  if (userId) {
+    res.json({ userId: userId });
+  } else {
+    res.status(400).json({ message: "User ID not found" });
+  }
+});
+
+//gets if of comments for post
+app.get("/api/getCommentsForPost/:postId", (req, res) => {
+  const { postId } = req.params;
+  console.log(postId);
+
+  connection.query("SELECT comment_id FROM comments WHERE post_id = ?", [postId], function (err, result) {
+    if (err) {
+      console.error("Error fetching comments:", err);
+      return res.status(500).json({ error: "Failed to fetch comments" });  // Return error status
+    }
+    
+    return res.status(200).json(result);  // Return the response with status 200 and the list of comments
+  });
+});
+
+///getId for user
+app.get("/api/getID/:nickname", (req, res) => {
+  const { nickname } = req.params; 
+
+  const query = 'SELECT user_id FROM users WHERE user_nickname = ?'; 
+
+  connection.query(query, [nickname], (err, result) => {
+    if (err) {
+      console.error("Error fetching user ID:", err);
+      return res.status(500).json({ error: "Failed to fetch user ID" });
+    }
+
+    if (result.length > 0) {
+      // If we find the user, send back the user ID
+      return res.status(200).json({ userId: result[0].user_id });
+    } else {
+      // If no user is found, respond with an error
+      return res.status(404).json({ error: "User not found" });
+    }
+  });
+});
+
+app.post('/api/logout',(req,res) =>{
+  if(!req.user) return res.sendStatus(401);
+
+  req.logout((err) =>{
+    if(err) return res.sendStatus(400);
+  });
+
+  return res.sendStatus(200);
+})

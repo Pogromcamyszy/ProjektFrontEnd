@@ -1,0 +1,25 @@
+.commentContainer {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  
+  .commentInput {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .commentButton {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .commentButton:hover {
+    background-color: #0056b3;
+  }
