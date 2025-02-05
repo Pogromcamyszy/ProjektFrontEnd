@@ -63,6 +63,7 @@ function App() {
               <Route path="/registry" element={<Registry />} />
               <Route path="/myprofile" element={<MyProfile/>}/>
               <Route path="/logout" element={<Logout/>}/>
+              <Route path="/profile/:id" element={<Profile/>}/>
               <Route path="/createpost" element={<PostCreate/>}/>
             </Routes>
       </BrowserRouter>

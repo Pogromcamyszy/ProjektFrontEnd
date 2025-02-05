@@ -75,3 +75,23 @@
     font-size: 1rem;
   }
 }
+
+.deleteButton {
+  margin-top:1rem;
+  background-color: red; /* Red background to signify deletion */
+  color: white; /* White text color */
+  border: none; /* Remove default border */
+  padding: 10px 20px; /* Add some padding */
+  font-size: 16px; /* Adjust font size */
+  cursor: pointer; /* Make the cursor a pointer to indicate it's clickable */
+  border-radius: 5px; /* Optional: rounded corners for a softer look */
+  transition: background-color 0.3s; /* Smooth transition for background change */
+}
+
+.deleteButton:hover {
+  background-color: darkred; /* Darker red when hovering */
+}
+
+.deleteButton:focus {
+  outline: none; /* Remove the outline when focused */
+}

@@ -253,11 +253,13 @@ app.post('/api/registry', (req, res) => { // Fix argument order: req first, then
 app.get("/api/getPostInfo/:id", (req, res) => {
   const postId = req.params.id;  // Get post_id from route parameter
 
+  const user = req.user; 
+  const currentUserId = user.user_id;
   const query = `
     SELECT 
       u.user_id, 
       u.user_nickname, 
-      p.*
+      p.* 
     FROM 
       users u
     JOIN 
@@ -276,23 +278,21 @@ app.get("/api/getPostInfo/:id", (req, res) => {
       return res.status(404).json({ error: "Post not found" });
     }
 
-    res.json(results[0]); 
+    const postData = results[0];
+    postData.currentUserId = currentUserId;
+
+    res.json(postData);
   });
 });
 
 ///add comments
 app.post("/api/addComment", (req, res) => {
-  console.log("dasdasdasdas");
-  const content  = req.body.content;
+  const content = req.body.content;
   const postId = req.body.postId;
-  const user_id = req.user.user_id; // Assuming req.user contains the logged-in user's information
-  console.log(req.body);
-  console.log(postId);
+  const user_id = req.user.user_id;
 
-  // SQL Insert Queryuser_id
   const query = "INSERT INTO comments (user_id, post_id, text) VALUES (?, ?, ?)";
-
-  // Insert the comment into the database
+  
   connection.execute(query, [user_id, postId, content], (err, result) => {
     if (err) {
       console.error("Error inserting comment:", err);
@@ -302,10 +302,12 @@ app.post("/api/addComment", (req, res) => {
     console.log("New comment added:", result);
     return res.status(201).json({
       message: "Comment added successfully",
-      comment: { user_id, postId, text: content },
+      comment_id: result.insertId, // Ensure the comment_id is returned in the response
+      user_nickname: req.user.user_nickname, // Assuming `user_nickname` is in the session
     });
   });
 });
+
 
 
 
@@ -420,6 +422,7 @@ app.get("/api/getID/:nickname", (req, res) => {
   });
 });
 
+// logout
 app.post('/api/logout',(req,res) =>{
   if(!req.user) return res.sendStatus(401);
 
@@ -429,3 +432,55 @@ app.post('/api/logout',(req,res) =>{
 
   return res.sendStatus(200);
 })
+
+// Delete comment route
+app.delete("/api/deleteComment/:comment_id", (req, res) => {
+  const { comment_id } = req.params;
+  const userId = req.user.user_id; // Assuming authentication middleware adds user info
+
+  // Check if the comment exists and belongs to the user
+  connection.query("SELECT * FROM comments WHERE comment_id = ?", [comment_id], (err, result) => {
+    if (err) {
+      console.error("Error fetching comment:", err);
+      return res.status(500).json({ message: "Server error." });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Comment not found." });
+    }
+    
+    if (result[0].user_id !== userId) {
+      return res.status(403).json({ message: "Unauthorized to delete this comment." });
+    }
+
+    // Delete the comment
+    connection.query("DELETE FROM comments WHERE comment_id = ?", [comment_id], (deleteErr) => {
+      if (deleteErr) {
+        console.error("Error deleting comment:", deleteErr);
+        return res.status(500).json({ message: "Server error." });
+      }
+      res.status(200).json({ message: "Comment deleted successfully." });
+    });
+  });
+});
+
+
+// SQL query to delete a post by ID
+app.delete('/api/deletePost/:postID', (req, res) => {
+  const { postID } = req.params;
+
+  const query = 'DELETE FROM posts WHERE post_id = ?';
+
+  connection.query(query, [postID], (err, result) => {
+    if (err) {
+      console.error('Error deleting post:', err);
+      return res.status(500).json({ message: 'Error deleting post' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    res.status(200).json({ message: 'Post deleted successfully' });
+  });
+});

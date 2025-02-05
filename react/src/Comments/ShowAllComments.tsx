@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import GetComment from "./GetComment"; // Import the GetComment component
+import GetComment from "./GetComment";
+import CreateComment from "./CreateComment";
 
 interface Comment {
   comment_id: number;
+  user_nickname: string;
+  text: string;
+  isOwner: boolean;
 }
 
 interface CommentsListProps {
@@ -26,7 +30,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ postID }) => {
       try {
         const response = await axios.get(`http://localhost:3000/api/getCommentsForPost/${postID}`);
         if (response.data && Array.isArray(response.data)) {
-          setComments(response.data); // Assuming response.data is an array of comments
+          setComments(response.data);
         }
       } catch (err) {
         setError("Failed to fetch comments.");
@@ -39,14 +43,18 @@ const CommentsList: React.FC<CommentsListProps> = ({ postID }) => {
     fetchComments();
   }, [postID]);
 
-  if (error) {
-    return <p>{error}</p>;
-  }
+  // Function to add new comment to the list
+  const handleNewComment = (newComment: Comment) => {
+    setComments((prevComments) => [newComment, ...prevComments]); 
+  };
+
+  if (error) return <p>{error}</p>;
 
   return (
-    <>
+    <div>
+      <CreateComment postID={postID} onCommentAdded={handleNewComment} />
       {loading ? (
-        "Loading comments..."
+        <p>Loading comments...</p>
       ) : (
         <div>
           {comments.map((comment) => (
@@ -54,7 +62,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ postID }) => {
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 };
 

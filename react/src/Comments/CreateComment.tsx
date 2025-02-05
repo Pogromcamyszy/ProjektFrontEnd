@@ -1,31 +1,46 @@
 import React, { useState } from "react";
-import styles from "../styles/comment.module.css"; 
+import styles from "../styles/comment.module.css";
 import axios from "axios";
 
-interface CommentInputProps {
-  onAddComment: (comment: string) => void;
+interface CreateCommentProps {
+  postID: number;
+  onCommentAdded: (newComment: Comment) => void;
 }
 
-const CreateComment = (props) => {
+interface Comment {
+  comment_id: number;
+  user_nickname: string;
+  text: string;
+  isOwner: boolean;
+}
+
+const CreateComment: React.FC<CreateCommentProps> = ({ postID, onCommentAdded }) => {
   const [comment, setComment] = useState("");
 
   const handleSubmit = async () => {
     if (comment.trim() === "") return;
-    console.log(props.postID);
-    console.log(comment);
+  
     try {
-      const response = await axios.post("http://localhost:3000/api/addComment", {
-        postId: props.postID, 
-        content: comment, 
-      }, {
-        withCredentials: true, 
-      });
-
-      if (response.status === 201) {
+      const response = await axios.post(
+        "http://localhost:3000/api/addComment",
+        { postId: postID, content: comment },
+        { withCredentials: true }
+      );
+      console.log(response.data.comment_id);
+      if (response.data.comment_id) {
         console.log("Comment added:", response.data);
-        
-      
+  
+        const newComment: Comment = {
+          comment_id: response.data.comment_id, 
+          user_nickname: response.data.user_nickname || "Unknown", 
+          text: comment,
+          isOwner: true,
+        };
+  
+        onCommentAdded(newComment);
         setComment("");
+      } else {
+        console.error("Invalid response format:", response.data);
       }
     } catch (error) {
       console.error("Failed to add comment:", error);

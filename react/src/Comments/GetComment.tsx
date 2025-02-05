@@ -13,14 +13,14 @@ interface LatestCommentProps {
   commentID: number;
 }
 
-const Comment: React.FC<LatestCommentProps> = ({ commentID }) => {
+const GetComment: React.FC<LatestCommentProps> = ({ commentID }) => {
   const [comment, setComment] = useState<Comment | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [deleted, setDeleted] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchLatestComment = async () => {
+    const fetchComment = async () => {
       try {
         const response = await axios.get(
           `http://localhost:3000/api/getComment/${commentID}`,
@@ -38,7 +38,7 @@ const Comment: React.FC<LatestCommentProps> = ({ commentID }) => {
       }
     };
 
-    fetchLatestComment();
+    fetchComment();
   }, [commentID]);
 
   const handleDelete = async () => {
@@ -65,7 +65,7 @@ const Comment: React.FC<LatestCommentProps> = ({ commentID }) => {
     <div className={styles.commentContainer}>
       <strong>{comment.user_nickname}</strong>: {comment.text}
       {comment.isOwner && (
-        <button className={styles.deleteButton} onClick={handleDelete}>
+        <button className={styles.deleteCommentButton} onClick={handleDelete}>
           Delete
         </button>
       )}
@@ -73,4 +73,4 @@ const Comment: React.FC<LatestCommentProps> = ({ commentID }) => {
   );
 };
 
-export default Comment;
+export default GetComment;
