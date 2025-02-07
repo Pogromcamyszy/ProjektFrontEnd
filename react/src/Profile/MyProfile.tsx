@@ -4,17 +4,21 @@ import RedirLogout from "../Auth/RedirLogout.tsx";
 import styles from "../styles/profile.module.css"; 
 import ProfileHead from "./ProfileHead.tsx";
 import ReadUsersPosts from "../Posts/ReadUsersPosts.tsx";
-import axios from "axios";  // Make sure axios is imported if you're using it to fetch data
+import UserAlbums from "../Album/ShowUserAlbums.tsx"; // Import UserAlbums component
+import axios from "axios";
 
 export default function Profile() {
-  // Corrected type for userIndex (number or null)
   const [userIndex, setUserIndex] = useState<number | null>(null);
-
   const [isIndexLoaded, setIsIndexLoaded] = useState<boolean>(false);
   const [isEdited, setIsEdited] = useState<boolean>(false);
+  const [showPosts, setShowPosts] = useState<boolean>(true); // Toggle state
 
   const handleEditButton = () => {
     setIsEdited(!isEdited);
+  };
+
+  const toggleView = () => {
+    setShowPosts((prev) => !prev);
   };
 
   useEffect(() => {
@@ -38,12 +42,7 @@ export default function Profile() {
   }, []);  
 
   useEffect(() => {
-    if (userIndex !== null) {
-      setIsIndexLoaded(true);  
-    } else {
-      setIsIndexLoaded(false);  
-    }
-    console.log(userIndex);
+    setIsIndexLoaded(userIndex !== null);
   }, [userIndex]);  
 
   return (
@@ -57,7 +56,17 @@ export default function Profile() {
       </div>
       
       {isIndexLoaded ? (
-        <ReadUsersPosts userId={userIndex} />
+        <>
+          <button className={styles.toggleButton} onClick={toggleView}>
+            {showPosts ? "Show Albums" : "Show Posts"}
+          </button>
+
+          {showPosts ? (
+            <ReadUsersPosts userId={userIndex} />
+          ) : (
+            <UserAlbums userId={userIndex} />
+          )}
+        </>
       ) : (
         <p>No user found.</p>
       )}

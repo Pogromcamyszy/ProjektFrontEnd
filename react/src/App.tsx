@@ -1,31 +1,34 @@
-import React, { createContext, useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Link,useLocation } from "react-router-dom";
+import { createContext, useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Login from "./Login/Login.tsx";
 import Registry from "./Registry/Registry.tsx";
 import MyProfile from "./Profile/MyProfile.tsx";
 import Profile from "./Profile/Profile.tsx";
 import navbar from "./styles/navbar.module.css";
 import PostCreate from "./Posts/PostCreate.tsx";
-import Logout from "./Auth/Logout.tsx"
+import Logout from "./Auth/Logout.tsx";
+import SearchSite from "./Search/SearchSite.tsx";
 import { getAuth } from "./Fetch/Fetch.tsx";
+
 // Create the context
 export const AuthContext = createContext([false, () => {}]);
 
 function App() {
-  
-  // Define state for login status and check is user is loggin by useEffect
-  const [isLogged, setIsLogged] = useState(); 
+  // Define state for login status and check if user is logged in by useEffect
+  const [isLogged, setIsLogged] = useState(false); // Initialize with a default value
+  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => {
-    const checkLoginStatus = async() =>{
-    const res = await getAuth();
-    if (res === 200) {
-      setIsLogged(true); // Set the login status to true
-    } else if (res === 401) {
-      setIsLogged(false); // Set the login status to false
-    }
-  }
+    const checkLoginStatus = async () => {
+      const res = await getAuth();
+      if (res === 200) {
+        setIsLogged(true); // Set the login status to true
+      } else if (res === 401) {
+        setIsLogged(false); // Set the login status to false
+      }
+    };
     checkLoginStatus();
-  }, []);
+  }, []); // Empty dependency array to run once on mount
 
   return (
     <AuthContext.Provider value={[isLogged, setIsLogged]}>
@@ -45,30 +48,44 @@ function App() {
                 </>
               ) : (
                 <>
-                  <div className={navbar.btn}>Placeholder</div>
-                  <div className={navbar.btn}>Placeholder</div>
-                  <div className={navbar.btn}><Link to="/createpost">Create Post</Link></div>
-                  <div className={navbar.btn}><Link to="/myprofile">My profile</Link></div>
-                  <div className={navbar.btn}><Link to="/logout">Logout</Link></div>
-                  
+                  <div className={navbar.searchContainer}>
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className={navbar.searchInput}
+                    />
+                    <Link to={`/search/${searchTerm}`}>
+                      <button className={navbar.searchBtn}>🔍</button>
+                    </Link>
+                  </div>
+                  <div className={navbar.btn}>
+                    <Link to="/createpost">Create Post</Link>
+                  </div>
+                  <div className={navbar.btn}>
+                    <Link to="/myprofile">My profile</Link>
+                  </div>
+                  <div className={navbar.btn}>
+                    <Link to="/logout">Logout</Link>
+                  </div>
                 </>
               )}
             </div>
           </div>
         </nav>
 
-
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/registry" element={<Registry />} />
-              <Route path="/myprofile" element={<MyProfile/>}/>
-              <Route path="/logout" element={<Logout/>}/>
-              <Route path="/profile/:id" element={<Profile/>}/>
-              <Route path="/createpost" element={<PostCreate/>}/>
-            </Routes>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/registry" element={<Registry />} />
+          <Route path="/myprofile" element={<MyProfile />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/createpost" element={<PostCreate />} />
+          <Route path="/search/:searchTerm" element={<SearchSite />} />
+        </Routes>
       </BrowserRouter>
     </AuthContext.Provider>
-
   );
 }
 

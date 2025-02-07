@@ -66,3 +66,24 @@
 }
 
 /* Body styles */
+.searchContainer {
+    display: flex;
+    align-items: center;
+    background-color: #00FF00; /* Use the same background color as other buttons */
+    border-radius: 5px;
+    padding: 5px;
+  }
+  
+  .searchInput {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    outline: none;
+  }
+  
+  .searchBtn {
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+  }

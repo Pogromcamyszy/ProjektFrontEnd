@@ -3,10 +3,10 @@ import { useLocation } from "react-router-dom";
 import styles from "../styles/profile.module.css"; 
 import ProfileHead from "./ProfileHead.tsx";
 import ReadUsersPosts from "../Posts/ReadUsersPosts.tsx";
+import UserAlbums from "../Album/ShowUserAlbums.tsx"; // Import UserAlbums component
 import axios from "axios";
 
 export default function Profile() {
-
   // Custom hook to get the last path segment from the URL
   const useLastPathSegment = () => {
     const location = useLocation();
@@ -16,14 +16,11 @@ export default function Profile() {
 
   const [userIndex, setUserIndex] = useState<number | null>(null);
   const [isIndexLoaded, setIsIndexLoaded] = useState<boolean>(false);
-  const [isEdited, setIsEdited] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);  // Loading state for the user fetch
-
-  const handleEditButton = () => {
-    setIsEdited(!isEdited);
-  };
+  const [loading, setLoading] = useState<boolean>(true);
+  const [showPosts, setShowPosts] = useState<boolean>(true); // Toggle state
 
   const nickname = useLastPathSegment();
+
   useEffect(() => {
     console.log(nickname);
 
@@ -41,24 +38,21 @@ export default function Profile() {
       } catch (error) {
         console.error("Failed to fetch user ID:", error);
       } finally {
-        setLoading(false);  // Stop loading when the API call is done
+        setLoading(false);
       }
     };
 
     fetchUserId();  
-  }, []);  // Empty dependency array ensures this runs once when component mounts
+  }, []);  
 
-  // Update the loaded state based on the userIndex value
   useEffect(() => {
-    if (userIndex !== null) {
-      setIsIndexLoaded(true);  
-    } else {
-      setIsIndexLoaded(false);  
-    }
-    console.log(userIndex);
+    setIsIndexLoaded(userIndex !== null);
   }, [userIndex]);  
 
-  // Show loading message while fetching the user ID
+  const toggleView = () => {
+    setShowPosts((prev) => !prev);
+  };
+
   if (loading) {
     return <p>Loading user information...</p>;
   }
@@ -70,7 +64,17 @@ export default function Profile() {
       </div>
       
       {isIndexLoaded ? (
-        <ReadUsersPosts userId={userIndex} />
+        <>
+          <button className={styles.toggleButton} onClick={toggleView}>
+            {showPosts ? "Show Albums" : "Show Posts"}
+          </button>
+
+          {showPosts ? (
+            <ReadUsersPosts userId={userIndex} />
+          ) : (
+            <UserAlbums userId={userIndex} />
+          )}
+        </>
       ) : (
         <p>No user found.</p>
       )}
