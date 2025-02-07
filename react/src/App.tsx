@@ -14,21 +14,20 @@ import { getAuth } from "./Fetch/Fetch.tsx";
 export const AuthContext = createContext([false, () => {}]);
 
 function App() {
-  // Define state for login status and check if user is logged in by useEffect
-  const [isLogged, setIsLogged] = useState(false); // Initialize with a default value
+  const [isLogged, setIsLogged] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const checkLoginStatus = async () => {
       const res = await getAuth();
       if (res === 200) {
-        setIsLogged(true); // Set the login status to true
+        setIsLogged(true);
       } else if (res === 401) {
-        setIsLogged(false); // Set the login status to false
+        setIsLogged(false);
       }
     };
     checkLoginStatus();
-  }, []); // Empty dependency array to run once on mount
+  }, []);
 
   return (
     <AuthContext.Provider value={[isLogged, setIsLogged]}>

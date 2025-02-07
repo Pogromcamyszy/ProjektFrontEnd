@@ -548,14 +548,15 @@ app.get("/api/getAlbums", (req, res) => {
   });
 });
 
-///get post id by album id 
+///get data for album display
 app.get('/api/posts/album/:albumId', (req, res) => {
   const albumId = req.params.albumId;
 
   const query = `
-    SELECT a.album_name, p.post_id
+    SELECT a.album_name, p.post_id, u.user_nickname
     FROM album a
     LEFT JOIN posts p ON a.album_id = p.album_id
+    LEFT JOIN users u ON p.fk_user_id = u.user_id
     WHERE a.album_id = ?;
   `;
 
@@ -570,7 +571,12 @@ app.get('/api/posts/album/:albumId', (req, res) => {
     }
 
     const albumName = results[0].album_name;
-    const posts = results.map((row) => ({ post_id: row.post_id })).filter(p => p.post_id);
+    const posts = results
+      .map((row) => ({
+        post_id: row.post_id,
+        user_nickname: row.user_nickname,
+      }))
+      .filter(p => p.post_id);
 
     res.json({ album_name: albumName, posts });
   });
@@ -597,5 +603,82 @@ app.get("/api/albums/user/:userId", (req, res) => {
     }
 
     res.json(results); 
+  });
+});
+
+///get ids of search user if exist
+app.get('/api/search/users/:searchTerm', (req, res) => {
+  const searchTerm = req.params.searchTerm;
+
+  const query = `
+    SELECT id
+    FROM users
+    WHERE user_nickname LIKE ?;
+  `;
+
+  connection.execute(query, [`%${searchTerm}%`], (err, results) => {
+    if (err) {
+      console.error("Error fetching users:", err);
+      return res.status(500).json({ error: "Failed to fetch users" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    const userIds = results.map((row) => row.id); // Extract only the user IDs
+    res.json(userIds); // Return the list of user IDs
+  });
+});
+
+
+//get ids of post with search title if exist
+app.get('/api/search/posts/:searchTerm', (req, res) => {
+  const searchTerm = req.params.searchTerm;
+
+  const query = `
+    SELECT post_id
+    FROM posts
+    WHERE title LIKE ?;
+  `;
+
+  connection.execute(query, [`%${searchTerm}%`], (err, results) => {
+    if (err) {
+      console.error("Error fetching posts:", err);
+      return res.status(500).json({ error: "Failed to fetch posts" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "No posts found" });
+    }
+
+    const postIds = results.map((row) => row.post_id); // Extract only the post IDs
+    res.json(postIds); // Return the list of post IDs
+  });
+});
+
+///get ids of search albums if exists
+
+app.get('/api/search/albums/:searchTerm', (req, res) => {
+  const searchTerm = req.params.searchTerm;
+
+  const query = `
+    SELECT album_id
+    FROM albums
+    WHERE album_name LIKE ?;
+  `;
+
+  connection.execute(query, [`%${searchTerm}%`], (err, results) => {
+    if (err) {
+      console.error("Error fetching albums:", err);
+      return res.status(500).json({ error: "Failed to fetch albums" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "No albums found" });
+    }
+
+    const albumIds = results.map((row) => row.album_id); // Extract only the album IDs
+    res.json(albumIds); // Return the list of album IDs
   });
 });

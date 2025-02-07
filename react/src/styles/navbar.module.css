@@ -1,41 +1,42 @@
-/* Container for the entire navbar */
 .box {
-    display:flex;
+    display: flex;
+    position: fixed;
     flex-direction: column;
     width: 100%;
     height: 100px;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: #fff;
 }
 
-*{
-   margin: 0 0 0 0;
+* {
+    margin: 0;
+    padding: 0;
 }
 
-/* Upper section - takes 70% of the navbar height */
 .upper {
-    flex: 70%; /* Takes 70% of the height */
-    background-color: #00FF00; /* Lime green background (you can change this color) */
+    flex: 70%;
+    background-color: #00FF00;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 20px; /* You can adjust font size for the logo */
+    font-size: 20px;
 }
 
-/* Lower section - takes the remaining 30% of the navbar height */
 .lower {
-    flex: 30%; /* Takes 30% of the height */
+    flex: 30%;
     display: flex;
-    justify-content: space-between; /* Remove space between buttons */
+    justify-content: space-between;
     align-items: center;
-    background-color: #32CD32; /* Lighter lime green background */
+    background-color: #32CD32;
     padding: 0;
     margin: 0;
-    width: 100%; /* Ensure lower section takes full width */
+    width: 100%;
 }
 
-/* Individual button styling */
 .btn {
-    float:none;
-    background-color: #00FF00; /* Lime green */
+    background-color: #00FF00;
     color: white;
     border: 2px solid lime;
     border-radius: 5px;
@@ -43,18 +44,16 @@
     text-align: center;
     font-size: 16px;
     font-weight: bold;
-    flex: 1; /* Ensure buttons fill the available space */
-    margin: 0; /* Remove margins between buttons */
+    flex: 1;
+    margin: 0;
     transition: background-color 0.3s, transform 0.3s;
 }
 
-/* Hover effect */
 .btn:hover {
-    background-color: #32CD32; /* Lighter lime green */
-    transform: scale(1.05); /* Slightly enlarge the button */
+    background-color: #32CD32;
+    transform: scale(1.05);
 }
 
-/* Link styling inside the buttons */
 .btn a {
     text-decoration: none;
     color: white;
@@ -65,25 +64,32 @@
     line-height: 1.5;
 }
 
-/* Body styles */
 .searchContainer {
     display: flex;
     align-items: center;
-    background-color: #00FF00; /* Use the same background color as other buttons */
+    background-color: #00FF00;
     border-radius: 5px;
     padding: 5px;
-  }
-  
-  .searchInput {
+}
+
+.searchInput {
     flex: 1;
     padding: 10px;
     font-size: 16px;
     border: none;
     outline: none;
-  }
-  
-  .searchBtn {
+}
+
+.searchBtn {
     padding: 10px;
     border: none;
     cursor: pointer;
-  }
+}
+
+body {
+    margin-top: 100px;
+}
+
+.main-content {
+    margin-top: 100px;
+}

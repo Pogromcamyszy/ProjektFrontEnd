@@ -31,7 +31,7 @@ const UserAlbums = ({ userId }) => {
       <div>
         {albums.length > 0 ? (
           albums.map((album) => (
-            <div key={album.album_id} style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+            <div key={album.album_id}>
               <ShowAlbum albumId={album.album_id} /> {/* Display album using ShowAlbum component */}
             </div>
           ))

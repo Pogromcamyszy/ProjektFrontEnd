@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ShowPost from "../Posts/ShowPost";
+import styles from "../styles/AlbumPosts.module.css"; // Import CSS as a module
 
 const AlbumPosts = ({ albumId }) => {
   const [posts, setPosts] = useState([]);
   const [albumName, setAlbumName] = useState(""); // Store album name
+  const [userNickname, setUserNickname] = useState(""); // Store user nickname
   const [loading, setLoading] = useState(true);
   const [showPosts, setShowPosts] = useState(false); // Toggle visibility
 
@@ -14,6 +16,7 @@ const AlbumPosts = ({ albumId }) => {
         const response = await axios.get(`/api/posts/album/${albumId}`);
         setPosts(response.data.posts); // Store posts
         setAlbumName(response.data.album_name); // Store album name
+        setUserNickname(response.data.posts[0]?.user_nickname || "Unknown"); // Store user nickname
         setLoading(false);
       } catch (error) {
         console.error("Error fetching album data:", error);
@@ -33,21 +36,22 @@ const AlbumPosts = ({ albumId }) => {
   }
 
   return (
-    <div>
-      <h1 onClick={togglePostsVisibility} style={{ cursor: "pointer", color: "blue" }}>
-        Posts in Album: {albumName || `Album ${albumId}`} {showPosts ? "↓" : "↑"}
+    <div className={styles.albumPostsContainer}>
+      <h1 onClick={togglePostsVisibility}>
+        Posts in Album: {albumName || `Album ${albumId}`} by {userNickname}{" "}
+        {showPosts ? "↓" : "↑"}
       </h1>
 
       {showPosts && (
-        <div>
+        <div className={styles.postsWrapper}>
           {posts.length > 0 ? (
             posts.map((post) => (
-              <div key={post.post_id}>
+              <div className={styles.postItem} key={post.post_id}>
                 <ShowPost postId={post.post_id} />
               </div>
             ))
           ) : (
-            <p>No posts found for this album.</p>
+            <p className={styles.noPostsMessage}>No posts found for this album.</p>
           )}
         </div>
       )}

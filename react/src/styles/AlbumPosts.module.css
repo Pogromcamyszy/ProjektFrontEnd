@@ -1,0 +1,57 @@
+.albumPostsContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 20px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+    width: 50%;
+    margin: 1rem auto;
+}
+
+.albumPostsContainer h1 {
+    cursor: pointer;
+    color: blue;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    align-self: flex-start;
+}
+
+.albumPostsContainer h1:hover {
+    color: darkblue;
+}
+
+.postsWrapper {
+    margin-top: 10px;
+}
+
+.postItem {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.postItem:hover {
+    transform: scale(1.05);
+}
+
+.postItem p {
+    font-size: 1rem;
+    color: #333;
+    text-align: center;
+}
+
+.noPostsMessage {
+    color: #777;
+}
