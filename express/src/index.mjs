@@ -703,3 +703,33 @@ app.get('/api/getfeed', (req, res) => {
     return res.status(200).json(postIds);  // Sending array of IDs as JSON
   });
 });
+
+// return id of post which hase image id the same
+app.get('/api/search/pictureId/:number', (req, res) => {
+  let fileNumber = req.params.number; // Extract the number from the request
+
+  // SQL Query
+  const query = `
+      SELECT post_id
+      FROM posts
+      WHERE post_img LIKE CONCAT('uploads%', ?, '%')
+      LIMIT 1;
+  `;
+
+  connection.query(query, [fileNumber], (err, results) => {
+      if (err) {
+          console.error('Database query error:', err);
+          return res.status(500).json({ error: 'Database error' });
+      }
+
+      if (results.length > 0) {
+          // Send only the post_id number
+          console.log(results);
+          return res.status(200).send(results);
+      } else {
+          res.status(404).json({ error: 'Post not found' });
+      }
+  });
+});
+
+

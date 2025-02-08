@@ -27,6 +27,8 @@ function Post(props) {
         album_name 
       } = result.data;
 
+      const picture_id = post_img.replace(/^uploads[\\/]/, '').replace(/\.[^/.]+$/, '');
+
       setPostInfo({
         userNickname: user_nickname,
         description: post_description,
@@ -36,6 +38,7 @@ function Post(props) {
         currentUserId: currentUserId,
         albumName: album_name,
         title: title,  
+        picture_id: picture_id,
       });
     } catch (error) {
       console.error("Error fetching post info:", error);
@@ -87,7 +90,9 @@ function Post(props) {
           className={styles.postImage}
         />
       </div>
-
+      <div>
+         <u><p>Picture number: {postInfo.picture_id}</p></u>
+      </div>
       <div className={styles.textContent}>
         <p className={styles.postDescription}>{postInfo.description}</p>
       </div>

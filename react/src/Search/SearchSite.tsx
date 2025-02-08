@@ -17,6 +17,7 @@ const SearchSite = () => {
   const [userData, setUserData] = useState([]);
   const [postsByTitle, setPostsByTitle] = useState([]);
   const [albumsByName, setAlbumsByName] = useState([]);
+  const [postByImg, setPostByImg] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,52 +25,39 @@ const SearchSite = () => {
       setLoading(true);
 
       const userRequest = axios.get(`/api/search/users/${searchTerm}`)
-        .then(response => {
-          console.log("User Data:", response.data);
-          return response;
-        })
-        .catch((err) => {
-          console.error("Error fetching users:", err);
-          return { data: [] }; 
-        });
+        .then(response => response)
+        .catch((err) => ({ data: [] }));
 
       const postsRequest = axios.get(`/api/search/posts/${searchTerm}`)
-        .then(response => {
-          console.log("Posts Data:", response.data);
-          return response;
-        })
-        .catch((err) => {
-          console.error("Error fetching posts:", err);
-          return { data: [] }; 
-        });
+        .then(response => response)
+        .catch((err) => ({ data: [] }));
+
+      const pictureRequest = axios.get(`/api/search/pictureId/${searchTerm}`)
+        .then(response => response)
+        .catch((err) => ({ data: [] }));
 
       const albumsRequest = axios.get(`/api/search/albums/${searchTerm}`)
-        .then(response => {
-          console.log("Albums Data:", response.data);
-          return response;
-        })
-        .catch((err) => {
-          console.error("Error fetching albums:", err);
-          return { data: [] }; 
-        });
+        .then(response => response)
+        .catch((err) => ({ data: [] }));
 
-      const [userResponse, postsResponse, albumsResponse] = await Promise.all([
+      const [userResponse, postsResponse, albumsResponse, pictureResponse] = await Promise.all([
         userRequest,
         postsRequest,
         albumsRequest,
+        pictureRequest,
       ]);
 
       setUserData(userResponse.data);
       setPostsByTitle(postsResponse.data);
       setAlbumsByName(albumsResponse.data);
+      setPostByImg(pictureResponse.data);
       setLoading(false);
     };
 
     fetchData();
-  }, []);
+  }, [searchTerm]);
 
   const handleProfileClick = (nickname) => {
-    // Navigate to the profile page 
     navigate(`/profile/${nickname}`);
   };
 
@@ -82,24 +70,19 @@ const SearchSite = () => {
       <h1>Search Results</h1>
 
       <div>
-  {userData.length > 0 ? (
-    userData.map((user) => {
-      const nickname = user;
-      return (
-        <div 
-        key={nickname} 
-        onClick={() => handleProfileClick(nickname)} 
-        style={{ cursor: 'pointer' }}
-        >
-
-          <ProfileHead nickname={nickname} />
-        </div>
-      );
-    })
-  ) : (
-    <p>No users found.</p>
-  )}
-</div>
+        {userData.length > 0 ? (
+          userData.map((user) => {
+            const nickname = user;
+            return (
+              <div key={nickname} onClick={() => handleProfileClick(nickname)} style={{ cursor: 'pointer' }}>
+                <ProfileHead nickname={nickname} />
+              </div>
+            );
+          })
+        ) : (
+          <center><p>No users found.</p></center>
+        )}
+      </div>
 
       <div>
         {postsByTitle.length > 0 ? (
@@ -118,6 +101,16 @@ const SearchSite = () => {
           ))
         ) : (
           <center><p>No albums found.</p></center>
+        )}
+      </div>
+
+      <div>
+        {postByImg.length > 0 ? (
+          postByImg.map((post) => (
+            <ShowPost key={post.post_id} postId={post.post_id} />
+          ))
+        ) : (
+          <center><p>No posts with matching picture ID found.</p></center>
         )}
       </div>
     </div>
