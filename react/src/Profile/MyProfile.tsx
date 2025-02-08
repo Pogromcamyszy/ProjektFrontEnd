@@ -1,17 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,createContext } from "react";
 import ProfileHeadEdit from "./ProfileHeadEdit";
-import RedirLogout from "../Auth/RedirLogout.tsx";
 import styles from "../styles/profile.module.css"; 
 import ProfileHead from "./ProfileHead.tsx";
 import ReadUsersPosts from "../Posts/ReadUsersPosts.tsx";
-import UserAlbums from "../Album/ShowUserAlbums.tsx"; // Import UserAlbums component
+import UserAlbums from "../Album/ShowUserAlbums.tsx"; 
 import axios from "axios";
+import useRedirectLogout from "../Auth/RedirLogout.tsx";
+
+export const isEditedContext = createContext([false, () => {}]);
 
 export default function Profile() {
+
+  useRedirectLogout();
+
   const [userIndex, setUserIndex] = useState<number | null>(null);
   const [isIndexLoaded, setIsIndexLoaded] = useState<boolean>(false);
   const [isEdited, setIsEdited] = useState<boolean>(false);
-  const [showPosts, setShowPosts] = useState<boolean>(true); // Toggle state
+  const [showPosts, setShowPosts] = useState<boolean>(true); 
+
 
   const handleEditButton = () => {
     setIsEdited(!isEdited);
@@ -47,14 +53,16 @@ export default function Profile() {
 
   return (
     <>
+    <isEditedContext.Provider value={{ isEdited, setIsEdited }}>
       <div className={styles.container}>
         {isEdited ? <ProfileHeadEdit /> : <ProfileHead />}
+        
         
         <button className={styles.fullWidthButton} onClick={handleEditButton}>
           {isEdited ? "Cancel" : "Edit profile"}
         </button>
       </div>
-      
+      </isEditedContext.Provider>
       {isIndexLoaded ? (
         <>
           <button className={styles.toggleButton} onClick={toggleView}>

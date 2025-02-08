@@ -3,10 +3,12 @@ import { useLocation } from "react-router-dom";
 import styles from "../styles/profile.module.css"; 
 import ProfileHead from "./ProfileHead.tsx";
 import ReadUsersPosts from "../Posts/ReadUsersPosts.tsx";
-import UserAlbums from "../Album/ShowUserAlbums.tsx"; // Import UserAlbums component
+import UserAlbums from "../Album/ShowUserAlbums.tsx"; 
 import axios from "axios";
+import useRedirectLogout from "../Auth/RedirLogout.tsx";
 
 export default function Profile() {
+  useRedirectLogout();
   // Custom hook to get the last path segment from the URL
   const useLastPathSegment = () => {
     const location = useLocation();
@@ -17,7 +19,7 @@ export default function Profile() {
   const [userIndex, setUserIndex] = useState<number | null>(null);
   const [isIndexLoaded, setIsIndexLoaded] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [showPosts, setShowPosts] = useState<boolean>(true); // Toggle state
+  const [showPosts, setShowPosts] = useState<boolean>(true); 
 
   const nickname = useLastPathSegment();
 

@@ -72,45 +72,39 @@ app.post('/api/postcreate', upload.single('image'), (req, res) => {
   if (!req.user) return res.status(401).json({ error: 'Not authenticated.' });
 
   const id = req.user.user_id;
-  const { description, new_album, album_id } = req.body;
+  const { title, description, new_album, album_id } = req.body;
   const file = req.file;
 
-  if (!description || !file) {
-    return res.status(400).json({ error: 'Description and image are required.' });
+  if (!title || !description || !file) {
+    return res.status(400).json({ error: 'Title, description, and image are required.' });
   }
 
   if (!album_id && !new_album) {
     return res.status(400).json({ error: 'Please select an album or create a new one.' });
   }
 
-  // Initialize albumId variable
   let finalAlbumId = album_id;
 
-  // If a new album is provided, insert it into the albums table
   if (new_album && new_album.trim()) {
-    const query = 'INSERT INTO album (album_name,user_id) VALUES (?,?)';
-    connection.query(query, [new_album.trim(),id], (err, result) => {
+    const query = 'INSERT INTO album (album_name, user_id) VALUES (?, ?)';
+    connection.query(query, [new_album.trim(), id], (err, result) => {
       if (err) {
         console.error('Failed to create new album:', err);
         return res.status(500).json({ error: 'Failed to create album.' });
       }
 
-      finalAlbumId = result.insertId; // Use the new album ID returned from the query
-
-      // Now insert the post with the new album ID
+      finalAlbumId = result.insertId;
       insertPost(finalAlbumId);
     });
   } else {
-    // If an existing album is selected, use the provided album_id
     insertPost(finalAlbumId);
   }
 
-  // Function to insert the post into the database
   function insertPost(albumId) {
     const filePath = file.path;
 
-    const query = 'INSERT INTO posts (fk_user_id, post_description, post_img, album_id) VALUES (?, ?, ?, ?)';
-    const values = [id, description, filePath, albumId];
+    const query = 'INSERT INTO posts (fk_user_id, title, post_description, post_img, album_id) VALUES (?, ?, ?, ?, ?)';
+    const values = [id, title, description, filePath, albumId];
 
     connection.query(query, values, (err, result) => {
       if (err) {
@@ -124,6 +118,7 @@ app.post('/api/postcreate', upload.single('image'), (req, res) => {
     });
   }
 });
+
 
 
 // Serve static files from the uploads directory
@@ -294,6 +289,7 @@ app.get("/api/getPostInfo/:id", (req, res) => {
       p.post_id, 
       p.post_description, 
       p.post_img, 
+      p.title,
       a.album_name,  
       u.user_id AS user_id
     FROM 
@@ -320,6 +316,7 @@ app.get("/api/getPostInfo/:id", (req, res) => {
     postData.currentUserId = currentUserId;  // Add the current user's ID
 
     // Send the post data, including the album name
+    console.log(postData);
     res.json(postData);
   });
 });
@@ -610,8 +607,10 @@ app.get("/api/albums/user/:userId", (req, res) => {
 app.get('/api/search/users/:searchTerm', (req, res) => {
   const searchTerm = req.params.searchTerm;
 
+  console.log(searchTerm);
+
   const query = `
-    SELECT id
+    SELECT user_nickname
     FROM users
     WHERE user_nickname LIKE ?;
   `;
@@ -626,7 +625,8 @@ app.get('/api/search/users/:searchTerm', (req, res) => {
       return res.status(404).json({ message: "No users found" });
     }
 
-    const userIds = results.map((row) => row.id); // Extract only the user IDs
+    const userIds = results.map((row) => row.user_nickname); // Extract only the user IDs
+    console.log(userIds);
     res.json(userIds); // Return the list of user IDs
   });
 });
@@ -658,13 +658,12 @@ app.get('/api/search/posts/:searchTerm', (req, res) => {
 });
 
 ///get ids of search albums if exists
-
 app.get('/api/search/albums/:searchTerm', (req, res) => {
   const searchTerm = req.params.searchTerm;
 
   const query = `
     SELECT album_id
-    FROM albums
+    FROM album
     WHERE album_name LIKE ?;
   `;
 
@@ -680,5 +679,27 @@ app.get('/api/search/albums/:searchTerm', (req, res) => {
 
     const albumIds = results.map((row) => row.album_id); // Extract only the album IDs
     res.json(albumIds); // Return the list of album IDs
+  });
+});
+
+//sends ids for homepage
+app.get('/api/getfeed', (req, res) => {
+  const query = `
+  SELECT post_id FROM posts ORDER BY post_id ASC;
+  `;
+  
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching posts:", err);
+      return res.status(500).json({ error: "Failed to fetch posts" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "No posts found" });
+    }
+
+    // Return an array of post IDs (just the numbers)
+    const postIds = results.map(post => post.post_id);
+    return res.status(200).json(postIds);  // Sending array of IDs as JSON
   });
 });

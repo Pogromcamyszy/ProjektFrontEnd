@@ -6,6 +6,8 @@
     max-width: 56.25rem;
     height: auto;
     align-items: center;
+    margin-left:auto;
+    margin-right:auto;
     flex-wrap: wrap; /* Allow items to wrap if needed */
     box-sizing: border-box;
   }

@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
-import styles from "../styles/PostCreate.module.css"; // Import the CSS module
+import styles from "../styles/PostCreate.module.css"; 
 import useRedirectLogout from "../Auth/RedirLogout";
 
 export default function PostCreate() {
   useRedirectLogout();
 
-  const [image, setImage] = useState<File | null>(null); // For storing the image file
+  const [image, setImage] = useState<File | null>(null);
   const [description, setDescription] = useState<string>("");
-  const [title, setTitle] = useState<string>(""); // For storing title
-  const [preview, setPreview] = useState<string | null>(null); // For previewing the image
-  const [albums, setAlbums] = useState<{ album_id: number, album_name: string }[]>([]); // For storing albums
-  const [selectedAlbum, setSelectedAlbum] = useState<number | null>(null); // For storing the selected album id
-  const [newAlbum, setNewAlbum] = useState<string>(""); // For storing a new album name
+  const [title, setTitle] = useState<string>(""); 
+  const [preview, setPreview] = useState<string | null>(null); 
+  const [albums, setAlbums] = useState<{ album_id: number, album_name: string }[]>([]); 
+  const [selectedAlbum, setSelectedAlbum] = useState<number | null>(null); 
+  const [newAlbum, setNewAlbum] = useState<string>(""); 
   const [albumExist,setAlbumExist] = useState<boolean>(false);
 
   // Fetch existing albums for the select dropdown
@@ -19,7 +19,7 @@ export default function PostCreate() {
     try {
       const response = await fetch("http://localhost:3000/api/getAlbums", {
         method: "GET",
-        credentials: "include", // Include credentials for the current session
+        credentials: "include",
       });
       const data = await response.json();
       if(response.status == 200){
@@ -33,19 +33,19 @@ export default function PostCreate() {
   };
 
   useEffect(() => {
-    fetchAlbums(); // Fetch albums when the component mounts
+    fetchAlbums(); 
   }, []);
 
   // Handle image file selection
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
-      setImage(file); // Store the file in state
-      setPreview(URL.createObjectURL(file)); // Create a preview URL for the selected image
+      setImage(file); 
+      setPreview(URL.createObjectURL(file)); 
     }
   };
 
-  // Handle form submission (upload image + description + title + selected album + create new album)
+
   const handleUpload = async () => {
     if (!image) {
       alert("Please select an image to upload!");
@@ -58,15 +58,14 @@ export default function PostCreate() {
     }
 
     const formData = new FormData();
-    formData.append("image", image); // Append the image file to FormData
-    formData.append("description", description || " "); // Append description or empty string
-    formData.append("title", title || "Untitled"); // Append title
-
-    // If a new album is provided, send it, otherwise send the selected album ID
+    formData.append("image", image); 
+    formData.append("description", description || " "); 
+    formData.append("title", title || "Untitled"); 
+   
     if (newAlbum) {
-      formData.append("new_album", newAlbum); // Append new album name if provided
+      formData.append("new_album", newAlbum); 
     } else {
-      formData.append("album_id", selectedAlbum?.toString() || ""); // Append selected album id if no new album
+      formData.append("album_id", selectedAlbum?.toString() || ""); 
     }
 
     try {
@@ -74,14 +73,14 @@ export default function PostCreate() {
         method: "POST",
         body: formData, 
         headers: {},
-        credentials: "include", // Include credentials for the current session
+        credentials: "include", 
       });
 
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
 
-      const data = await response.json(); // Parse the JSON response
+      const data = await response.json();
       console.log("Post created successfully:", data);
       alert("Post created successfully!");
     } catch (err) {
@@ -92,14 +91,12 @@ export default function PostCreate() {
 
   return (
     <div className={styles.container}>
-      {/* Show preview of the selected image */}
       {preview && (
         <div className={styles.preview}>
           <img src={preview} alt="Preview" />
         </div>
       )}
 
-      {/* File input for image selection */}
       <input
         type="file"
         name="image"
@@ -108,7 +105,6 @@ export default function PostCreate() {
         className={styles.fileInput}
       />
 
-      {/* Title input */}
       <input
         type="text"
         placeholder="Enter title"
@@ -117,7 +113,6 @@ export default function PostCreate() {
         className={styles.inputField}
       />
 
-      {/* Description input */}
       <textarea
         placeholder="Enter description..."
         value={description}
@@ -125,7 +120,6 @@ export default function PostCreate() {
         className={styles.textarea}
       />
 
-      {/* Album selection dropdown */}
       {
         albumExist && (
           <select
@@ -144,7 +138,6 @@ export default function PostCreate() {
         )
       }
 
-      {/* Create new album input */}
       <input
         type="text"
         placeholder="Create a new album"
@@ -153,7 +146,6 @@ export default function PostCreate() {
         className={styles.inputField}
       />
 
-      {/* Upload button */}
       <button onClick={handleUpload} className={styles.uploadButton}>
         Upload Post
       </button>

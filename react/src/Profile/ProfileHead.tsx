@@ -48,7 +48,7 @@ export default function ProfileHead({ nickname }: { nickname?: string }) {
     } else {
       getProfile();
     }
-  }, [nickname]); // ✅ Runs when `nickname` changes
+  }, [nickname]); 
 
 
   return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Post from "./ShowPost"; // Import your Post component
+import Post from "./ShowPost"; 
 
 interface UserPostsProps {
   userId: number;

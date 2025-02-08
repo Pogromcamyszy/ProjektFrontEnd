@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ShowPost from "../Posts/ShowPost";
-import styles from "../styles/AlbumPosts.module.css"; // Import CSS as a module
+import styles from "../styles/AlbumPosts.module.css"; 
 
 const AlbumPosts = ({ albumId }) => {
   const [posts, setPosts] = useState([]);
-  const [albumName, setAlbumName] = useState(""); // Store album name
-  const [userNickname, setUserNickname] = useState(""); // Store user nickname
+  const [albumName, setAlbumName] = useState(""); 
+  const [userNickname, setUserNickname] = useState(""); 
   const [loading, setLoading] = useState(true);
-  const [showPosts, setShowPosts] = useState(false); // Toggle visibility
+  const [showPosts, setShowPosts] = useState(false); 
 
   useEffect(() => {
     const fetchAlbumData = async () => {
       try {
         const response = await axios.get(`/api/posts/album/${albumId}`);
-        setPosts(response.data.posts); // Store posts
-        setAlbumName(response.data.album_name); // Store album name
-        setUserNickname(response.data.posts[0]?.user_nickname || "Unknown"); // Store user nickname
+        setPosts(response.data.posts); 
+        setAlbumName(response.data.album_name); 
+        setUserNickname(response.data.posts[0]?.user_nickname || "Unknown"); 
         setLoading(false);
       } catch (error) {
         console.error("Error fetching album data:", error);

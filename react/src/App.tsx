@@ -9,6 +9,8 @@ import PostCreate from "./Posts/PostCreate.tsx";
 import Logout from "./Auth/Logout.tsx";
 import SearchSite from "./Search/SearchSite.tsx";
 import { getAuth } from "./Fetch/Fetch.tsx";
+import logo from "./assets/logo.png";
+import Home from "./Feed/HomePage.tsx"
 
 // Create the context
 export const AuthContext = createContext([false, () => {}]);
@@ -34,7 +36,7 @@ function App() {
       <BrowserRouter>
         <nav>
           <div className={navbar.box}>
-            <div className={navbar.upper}>here logo picture</div>
+            <div className={navbar.upper}><img src={logo} alt="Logo" className={navbar.logo} /></div>
             <div className={navbar.lower}>
               {!isLogged ? (
                 <>
@@ -63,6 +65,9 @@ function App() {
                     <Link to="/createpost">Create Post</Link>
                   </div>
                   <div className={navbar.btn}>
+                    <Link to="/home">Home</Link>
+                  </div>
+                  <div className={navbar.btn}>
                     <Link to="/myprofile">My profile</Link>
                   </div>
                   <div className={navbar.btn}>
@@ -82,6 +87,8 @@ function App() {
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/createpost" element={<PostCreate />} />
           <Route path="/search/:searchTerm" element={<SearchSite />} />
+          <Route path="/home" element={<Home/>} />
+          <Route path="/" element={<Home/>} />
         </Routes>
       </BrowserRouter>
     </AuthContext.Provider>

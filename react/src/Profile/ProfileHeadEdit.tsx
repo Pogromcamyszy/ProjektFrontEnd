@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useContext } from "react";
 import axios from "axios";
 import profilehead from "../styles/profilehead.module.css";
-import { IRegistryUser, IRegistryFormMsg } from "./IRegistry.tsx"; // Assuming this interface is reused
-import { validateUserLastName, validateUserName, validateNickName, validateDescription, validatePassword } from "../Validate/ValidateFunctions.tsx";
+import { IRegistryUser, IRegistryFormMsg } from "./IRegistry.tsx"; 
+import { validateUserLastName, validateUserName, validateNickName, validateDescription} from "../Validate/ValidateFunctions.tsx";
 import { checkNickAvibility } from "../Fetch/Fetch.tsx";
-import { useNavigate } from "react-router-dom";
+import { isEditedContext } from "./MyProfile.tsx";
 
 export default function ProfileHeadEdit() {
-  const navigate = useNavigate();
+
+  const {isEdited,setIsEdited} = useContext(isEditedContext);
 
   const [loadedData,setLoadedData] = useState<IRegistryUser>({
     user_name: "",
@@ -133,8 +134,7 @@ export default function ProfileHeadEdit() {
         });
 
         if (response.status === 200) {
-          alert("Profile updated successfully!");
-          navigate("/myprofile");
+          setIsEdited(false);
         }
       } catch (error) {
         alert(`Error occurred while saving profile data: ${error.message}`);

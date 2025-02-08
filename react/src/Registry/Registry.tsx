@@ -63,7 +63,7 @@ useEffect(() => {
 
   const validateForm = async() => {
     let validationResult;
-    let isValid: boolean = true; // Initializing a flag to keep track of validation status
+    let isValid: boolean = true; 
     let gatherFormMsg:IRegistryFormMsg = {
         user_name_msg: "",
         user_lastName_msg: "",
@@ -119,7 +119,7 @@ useEffect(() => {
     ) {
         const res = await axios.post("http://localhost:3000/api/registry",formData,{
           headers: {
-            'Content-Type': 'application/json',  // Optional, if you're sending JSON data
+            'Content-Type': 'application/json',  
           },
           withCredentials: true, 
          });

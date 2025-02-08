@@ -2,11 +2,13 @@ import React, { useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
-import { AuthContext } from "../App"; // Import AuthContext
+import { AuthContext } from "../App"; 
+import useRedirectLogout from "./RedirLogout";
 
 const Logout = () => {
+  useRedirectLogout();
   const navigate = useNavigate();
-  const [isLogged, setIsLogged] = useContext(AuthContext); // Access the AuthContext
+  const [isLogged, setIsLogged] = useContext(AuthContext); 
 
   useEffect(() => {
     const logoutUser = async () => {
@@ -14,7 +16,6 @@ const Logout = () => {
         // Make the logout request to the backend
         await axios.post("http://localhost:3000/api/logout", {}, { withCredentials: true });
         
-        // Update the context and set isLogged to false
         setIsLogged(false);
         
         // After updating the context, navigate to login page

@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; 
 import axios from "axios";
-import styles from "../styles/SearchSite.module.css"; // Ensure this file exists for styling
+import ShowPost from "../Posts/ShowPost";
+import ShowAlbum from "../Album/ShowAlbum";
+import ProfileHead from "../Profile/ProfileHead";
+import styles from "../styles/SearchSite.module.css"; 
+import useRedirectLogout from "../Auth/RedirLogout";
 
 const SearchSite = () => {
+
+  useRedirectLogout();
+
   const { searchTerm } = useParams();
+  const navigate = useNavigate(); 
 
   const [userData, setUserData] = useState([]);
   const [postsByTitle, setPostsByTitle] = useState([]);
@@ -14,33 +22,106 @@ const SearchSite = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      try {
-        const userResponse = await axios.get(`/api/search/users/${searchTerm}`);
-        console.log("User Data:", userResponse.data); // Log response data
-        setUserData(userResponse.data); // Store user data
 
-        const postsResponse = await axios.get(`/api/search/posts/${searchTerm}`);
-        console.log("Posts Data:", postsResponse.data); // Log response data
-        setPostsByTitle(postsResponse.data); // Store posts by title
+      const userRequest = axios.get(`/api/search/users/${searchTerm}`)
+        .then(response => {
+          console.log("User Data:", response.data);
+          return response;
+        })
+        .catch((err) => {
+          console.error("Error fetching users:", err);
+          return { data: [] }; 
+        });
 
-        const albumsResponse = await axios.get(`/api/search/albums/${searchTerm}`);
-        console.log("Albums Data:", albumsResponse.data); // Log response data
-        setAlbumsByName(albumsResponse.data); // Store albums by name
-      } catch (error) {
-        console.error("Error fetching search data:", error);
-      } finally {
-        setLoading(false);
-      }
+      const postsRequest = axios.get(`/api/search/posts/${searchTerm}`)
+        .then(response => {
+          console.log("Posts Data:", response.data);
+          return response;
+        })
+        .catch((err) => {
+          console.error("Error fetching posts:", err);
+          return { data: [] }; 
+        });
+
+      const albumsRequest = axios.get(`/api/search/albums/${searchTerm}`)
+        .then(response => {
+          console.log("Albums Data:", response.data);
+          return response;
+        })
+        .catch((err) => {
+          console.error("Error fetching albums:", err);
+          return { data: [] }; 
+        });
+
+      const [userResponse, postsResponse, albumsResponse] = await Promise.all([
+        userRequest,
+        postsRequest,
+        albumsRequest,
+      ]);
+
+      setUserData(userResponse.data);
+      setPostsByTitle(postsResponse.data);
+      setAlbumsByName(albumsResponse.data);
+      setLoading(false);
     };
 
     fetchData();
-  }, [searchTerm]);
+  }, []);
+
+  const handleProfileClick = (nickname) => {
+    // Navigate to the profile page 
+    navigate(`/profile/${nickname}`);
+  };
 
   if (loading) {
     return <p>Loading search results...</p>;
   }
 
-  return (<h1>dsadsa</h1>);
+  return (
+    <div className={styles.searchResults}>
+      <h1>Search Results</h1>
+
+      <div>
+  {userData.length > 0 ? (
+    userData.map((user) => {
+      const nickname = user;
+      return (
+        <div 
+        key={nickname} 
+        onClick={() => handleProfileClick(nickname)} 
+        style={{ cursor: 'pointer' }}
+        >
+
+          <ProfileHead nickname={nickname} />
+        </div>
+      );
+    })
+  ) : (
+    <p>No users found.</p>
+  )}
+</div>
+
+      <div>
+        {postsByTitle.length > 0 ? (
+          postsByTitle.map((post) => (
+            <ShowPost key={post} postId={post} />
+          ))
+        ) : (
+          <center><p>No posts found.</p></center>
+        )}
+      </div>
+
+      <div>
+        {albumsByName.length > 0 ? (
+          albumsByName.map((album) => (
+            <ShowAlbum key={album} albumId={album} />
+          ))
+        ) : (
+          <center><p>No albums found.</p></center>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default SearchSite;

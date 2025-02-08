@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import ShowAlbum from "./ShowAlbum"; // Import the ShowAlbum component
+import ShowAlbum from "./ShowAlbum"; 
 
 const UserAlbums = ({ userId }) => {
   const [albums, setAlbums] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch albums for the given userId
+  
   useEffect(() => {
     const fetchAlbums = async () => {
       try {
         const response = await axios.get(`/api/albums/user/${userId}`);
-        setAlbums(response.data); // Store albums
+        setAlbums(response.data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching albums:", error);
@@ -20,7 +20,7 @@ const UserAlbums = ({ userId }) => {
     };
 
     fetchAlbums();
-  }, [userId]); // Re-fetch when userId changes
+  }, [userId]); 
 
   if (loading) {
     return <p>Loading albums...</p>;
@@ -32,7 +32,7 @@ const UserAlbums = ({ userId }) => {
         {albums.length > 0 ? (
           albums.map((album) => (
             <div key={album.album_id}>
-              <ShowAlbum albumId={album.album_id} /> {/* Display album using ShowAlbum component */}
+              <ShowAlbum albumId={album.album_id} /> 
             </div>
           ))
         ) : (

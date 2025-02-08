@@ -32,7 +32,7 @@ export default function Login() {
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent form from submitting (and reloading the page)
+    e.preventDefault(); // Prevent form  reloading the page
     loginUser();
   };
 
@@ -40,7 +40,7 @@ export default function Login() {
     try{
        const response = await axios.post('http://localhost:3000/api/login',user,{
         headers: {
-          'Content-Type': 'application/json',  // Optional, if you're sending JSON data
+          'Content-Type': 'application/json',  
         },
         withCredentials: true, 
        });
